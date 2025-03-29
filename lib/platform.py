@@ -7,18 +7,17 @@ from shutil import copyfile
 from lib.log_setup import logger
 import re
 import socket
+import platform as py_platform
 from collections import defaultdict
+from lib.platform_detector import PlatformDetector
 
-
-class Hotspot:
-    def __init__(self, hotspot):
-        self.hotspot_script_time = 0
-        self.time_without_wifi = 0
-        self.last_wifi_check_time = 0
-
-        subprocess.run("sudo chmod a+rwxX -R /home/Piano-LED-Visualizer/", shell=True, check=True)
 
 class PlatformBase:
+    """Base platform implementation with default behaviors."""
+    
+    def __init__(self):
+        self.detector = PlatformDetector()
+        
     def __getattr__(self, name):
         def method(*args, **kwargs):
             return False, f"Method '{name}' is not supported on this platform", ""
@@ -26,14 +25,46 @@ class PlatformBase:
 
 
 class PlatformNull(PlatformBase):
+    """Null platform implementation for non-Raspberry Pi environments."""
+    
+    def __init__(self):
+        super().__init__()
+        logger.info("Using null platform implementation")
+    
     def __getattr__(self, name):
         return self.pass_func
 
     def pass_func(self, *args, **kwargs):
         pass
+    
+    def get_local_address(self):
+        """Get the local IP address."""
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            # Doesn't need to be reachable
+            s.connect(('10.255.255.255', 1))
+            ip = s.getsockname()[0]
+            s.close()
+            return ip
+        except Exception as e:
+            logger.warning(f"Error getting local IP address: {str(e)}")
+            return "127.0.0.1"
+    
+    def get_wifi_networks(self):
+        """Mock implementation for desktop environments."""
+        return [
+            {"ssid": "Development Network", "signal": 90, "security": "WPA2"},
+            {"ssid": "Test Network", "signal": 65, "security": "WPA"}
+        ]
 
 
 class PlatformRasp(PlatformBase):
+    """Raspberry Pi specific platform implementation."""
+    
+    def __init__(self):
+        super().__init__()
+        logger.info("Using Raspberry Pi platform implementation")
+    
     @staticmethod
     def copy_connectall_script():
         # make sure connectall.py file exists and is updated
@@ -181,7 +212,7 @@ class PlatformRasp(PlatformBase):
     def manage_hotspot(self, hotspot, usersettings, midiports, first_run=False):
         if first_run:
             self.create_hotspot_profile()
-            if int(usersettings.get("is_hotspot_active")):
+            if int(usersettings.get_setting_value("is_hotspot_active")):
                 if not self.is_hotspot_running():
                     logger.info("Hotspot is enabled in settings but not running. Starting hotspot...")
                     self.enable_hotspot()
@@ -200,7 +231,7 @@ class PlatformRasp(PlatformBase):
 
         if (current_time - hotspot.hotspot_script_time) > 60 and (current_time - midiports.last_activity) > 60:
             hotspot.hotspot_script_time = current_time
-            if int(usersettings.get("is_hotspot_active")):
+            if int(usersettings.get_setting_value("is_hotspot_active")):
                 return
 
             wifi_success, wifi_ssid, _ = self.get_current_connections()
@@ -248,128 +279,118 @@ class PlatformRasp(PlatformBase):
 
     def disconnect_from_wifi(self, hotspot, usersettings):
         logger.info("Disconnecting from wifi")
-        hotspot.hotspot_script_time = time.time()
-        self.enable_hotspot()
+        # Get a list of active connections
+        active_connections = subprocess.run(['nmcli', '-t', '-f', 'NAME', 'connection', 'show', '--active'],
+                                          capture_output=True, text=True)
+
+        for connection in active_connections.stdout.strip().split('\n'):
+            if connection and connection != 'Hotspot':
+                # Disable the connection
+                subprocess.run(['sudo', 'nmcli', 'connection', 'down', connection])
+
+        # Set the hotspot flag
         usersettings.change_setting_value("is_hotspot_active", 1)
+        self.enable_hotspot()
 
     @staticmethod
     def get_wifi_networks():
+        networks = []
         try:
-            output = subprocess.check_output(['sudo', 'iwlist', 'wlan0', 'scan'], stderr=subprocess.STDOUT)
-            networks = output.decode().split('Cell ')
+            result = subprocess.run(['sudo', 'nmcli', '-t', '-f', 'SSID,SIGNAL,SECURITY', 'device', 'wifi', 'list'],
+                                   capture_output=True, text=True)
 
             def calculate_signal_strength(level):
                 # Map the signal level to a percentage (0% to 100%) linearly.
                 # -50 dBm or higher -> 100%
                 # -90 dBm or lower -> 0%
-                if level >= -50:
-                    return 100
-                elif level <= -90:
+                try:
+                    level = int(level)
+                    return max(0, min(100, level))
+                except ValueError:
                     return 0
-                else:
-                    return 100 - (100 / 40) * (level + 90)
 
-            wifi_dict = defaultdict(lambda: {'Signal Strength': -float('inf'), 'Signal dBm': -float('inf')})
-
-            for network in networks[1:]:
-                wifi_data = {}
-
-                address_line = [line for line in network.split('\n') if 'Address:' in line]
-                if address_line:
-                    wifi_data['Address'] = address_line[0].split('Address:')[1].strip()
-
-                ssid_line = [line for line in network.split('\n') if 'ESSID:' in line]
-                if ssid_line:
-                    ssid = ssid_line[0].split('ESSID:')[1].strip('"')
-                    wifi_data['ESSID'] = ssid
-
-                freq_line = [line for line in network.split('\n') if 'Frequency:' in line]
-                if freq_line:
-                    wifi_data['Frequency'] = freq_line[0].split('Frequency:')[1].split(' (')[0]
-
-                signal_line = [line for line in network.split('\n') if 'Signal level=' in line]
-                if signal_line:
-                    signal_dbm = int(signal_line[0].split('Signal level=')[1].split(' dBm')[0])
-                    signal_strength = calculate_signal_strength(signal_dbm)
-                    wifi_data['Signal Strength'] = signal_strength
-                    wifi_data['Signal dBm'] = signal_dbm
-
-                # Update the network info if this is the strongest signal for this SSID
-                if wifi_data['Signal Strength'] > wifi_dict[ssid]['Signal Strength']:
-                    wifi_dict[ssid].update(wifi_data)
-
-            # Convert the dictionary to a list
-            wifi_list = list(wifi_dict.values())
-
-            # Sort descending by "Signal Strength"
-            wifi_list.sort(key=lambda x: x['Signal Strength'], reverse=True)
-
-            return wifi_list
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"Error while scanning Wi-Fi networks: {e.output}")
+            for line in result.stdout.strip().split('\n'):
+                if line:
+                    parts = line.split(':')
+                    if len(parts) >= 3:
+                        ssid = parts[0]
+                        signal = calculate_signal_strength(parts[1])
+                        security = ':'.join(parts[2:])  # Join in case security field contains ':'
+                        
+                        # Skip empty SSIDs
+                        if ssid:
+                            # Check if network is already in the list
+                            existing_network = next((net for net in networks if net["ssid"] == ssid), None)
+                            if existing_network:
+                                # If same network appears multiple times, keep the one with the strongest signal
+                                if signal > existing_network["signal"]:
+                                    existing_network["signal"] = signal
+                                    existing_network["security"] = security
+                            else:
+                                networks.append({
+                                    "ssid": ssid,
+                                    "signal": signal,
+                                    "security": security
+                                })
+        
+            # Sort by signal strength, descending
+            networks.sort(key=lambda x: x["signal"], reverse=True)
+            return networks
+        except Exception as e:
+            logger.warning(f"Error getting WiFi networks: {str(e)}")
             return []
 
     @staticmethod
     def get_local_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
-            # Get the hostname
-            hostname = socket.gethostname()
-
-            # Get the IP address
-            ip_address = socket.gethostbyname(hostname + ".local")
-
-            # Construct the full local address
-            local_address = f"{hostname}.local"
-
-            return {
-                "success": True,
-                "local_address": local_address,
-                "ip_address": ip_address
-            }
-        except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            # Doesn't need to be reachable
+            s.connect(('10.255.255.255', 1))
+            ip = s.getsockname()[0]
+        except:
+            ip = '127.0.0.1'
+        finally:
+            s.close()
+        return ip
 
     @staticmethod
     def change_local_address(new_name):
-        new_name = new_name.rstrip('.local')
-        logger.info("Changing local address to " + new_name)
-        # Validate the new name
-        if not re.match(r'^[a-zA-Z0-9-]+$', new_name):
-            raise ValueError("Invalid name. Use only letters, numbers, and hyphens.")
+        # Check if new_name is a valid hostname
+        if not re.match(r'^[a-zA-Z0-9-]{1,63}$', new_name):
+            return False, "Invalid hostname. Only letters, numbers, and hyphens are allowed."
 
         try:
-            # Change the hostname
-            subprocess.run(['sudo', 'hostnamectl', 'set-hostname', new_name], check=True)
+            # Update hostname in /etc/hostname
+            with open('/etc/hostname', 'w') as f:
+                f.write(new_name)
 
-            # Update /etc/hosts file
-            with open('/etc/hosts', 'r') as file:
-                hosts_content = file.readlines()
+            # Update /etc/hosts
+            with open('/etc/hosts', 'r') as f:
+                lines = f.readlines()
 
-            with open('/etc/hosts', 'w') as file:
-                for line in hosts_content:
-                    if "127.0.1.1" in line:
-                        file.write(f"127.0.1.1\t{new_name}\n")
-                    else:
-                        file.write(line)
+            with open('/etc/hosts', 'w') as f:
+                for line in lines:
+                    if line.strip():
+                        parts = line.split()
+                        if len(parts) >= 2 and parts[0] == '127.0.1.1':
+                            # Modify this line
+                            parts[1] = new_name
+                            f.write(' '.join(parts) + '\n')
+                        else:
+                            f.write(line)
 
-            # Restart avahi-daemon to apply changes
-            subprocess.run(['sudo', 'systemctl', 'restart', 'avahi-daemon'], check=True)
-
-            # Optionally, restart the networking service
-            subprocess.run(['sudo', 'systemctl', 'restart', 'networking'], check=True)
-
-            logger.info(f"Local address successfully changed to {new_name}.local")
-            return True
-
-        except subprocess.CalledProcessError as e:
-            logger.warning(f"An error occurred while changing the local address: {e}")
-            return False
-        except IOError as e:
-            logger.warning(f"An error occurred while updating the hosts file: {e}")
-            return False
+            # Apply changes
+            subprocess.run(['sudo', 'systemctl', 'restart', 'avahi-daemon'])
+            
+            return True, f"Hostname changed to {new_name}. Please reboot for changes to take full effect."
         except Exception as e:
-            logger.warning(f"An unexpected error occurred: {e}")
-            return False
+            return False, f"Error changing hostname: {str(e)}"
+
+
+def get_platform_instance():
+    """Factory function to get the appropriate platform implementation."""
+    detector = PlatformDetector()
+    if detector.is_raspberry_pi:
+        return PlatformRasp()
+    else:
+        return PlatformNull()

@@ -1,0 +1,138 @@
+[2025-03-29 19:05:42] WARNING - RPi GPIO failed, using null driver.
+[2025-03-29 19:05:42] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-03-29 19:05:42] WARNING - Module spidev not found.
+[2025-03-29 19:05:43] INFO - Starting development server for Illumino web interface
+[2025-03-29 19:05:43] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:05:43] WARNING - Can't load settings file, restoring defaults
+[2025-03-29 19:05:43] INFO - no play port
+[2025-03-29 19:05:43] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:05:43] INFO - Initialized LED strip emulator with 176 pixels
+[2025-03-29 19:05:43] INFO - LED strip emulator began
+[2025-03-29 19:05:43] ERROR - Unhandled Exception: 
+Traceback (most recent call last):
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 85, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 53, in main
+    component_initializer = ComponentInitializer(illumino_args)
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\component_initializer.py", line 26, in __init__
+    self.hotspot = Hotspot(self.platform)
+                   ~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\platform.py", line 19, in __init__
+    subprocess.run("sudo chmod a+rwxX -R /home/Piano-LED-Visualizer/", shell=True, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.752.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 579, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command 'sudo chmod a+rwxX -R /home/Piano-LED-Visualizer/' returned non-zero exit status 9009.
+[2025-03-29 19:06:17] WARNING - RPi GPIO failed, using null driver.
+[2025-03-29 19:06:17] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-03-29 19:06:17] WARNING - Module spidev not found.
+[2025-03-29 19:06:17] INFO - Starting development server for Illumino web interface
+[2025-03-29 19:06:17] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:06:17] INFO - no play port
+[2025-03-29 19:06:17] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:06:17] INFO - Initialized LED strip emulator with 176 pixels
+[2025-03-29 19:06:17] INFO - LED strip emulator began
+[2025-03-29 19:06:17] ERROR - Unhandled Exception: 
+Traceback (most recent call last):
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 85, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 53, in main
+    component_initializer = ComponentInitializer(illumino_args)
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\component_initializer.py", line 26, in __init__
+    self.hotspot = Hotspot(self.platform)
+                   ~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\platform.py", line 19, in __init__
+    subprocess.run("sudo chmod a+rwxX -R /home/Piano-LED-Visualizer/", shell=True, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.752.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 579, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command 'sudo chmod a+rwxX -R /home/Piano-LED-Visualizer/' returned non-zero exit status 9009.
+[2025-03-29 19:10:34] WARNING - RPi GPIO failed, using null driver.
+[2025-03-29 19:10:34] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-03-29 19:10:34] WARNING - Module spidev not found.
+[2025-03-29 19:10:34] INFO - Starting development server for Illumino web interface
+[2025-03-29 19:10:34] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:10:34] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:10:34] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:10:34] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:10:34] INFO - Using null platform implementation
+[2025-03-29 19:10:34] INFO - no play port
+[2025-03-29 19:10:34] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:10:34] INFO - Initialized LED strip emulator with 176 pixels
+[2025-03-29 19:10:34] INFO - LED strip emulator began
+[2025-03-29 19:10:34] ERROR - Unhandled Exception: 
+Traceback (most recent call last):
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 85, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\dev_server.py", line 53, in main
+    component_initializer = ComponentInitializer(illumino_args)
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\component_initializer.py", line 36, in __init__
+    self.menu = MenuLCD("config/menu.xml", self.args, self.usersettings, self.ledsettings,
+                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        self.ledstrip, self.learning, self.saving, self.midiports,
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        self.hotspot, self.platform)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\almog\Projects\Illumino\Illumino\lib\menulcd.py", line 39, in __init__
+    raise RuntimeError("Cannot locate font file: %s" % self.lcd_ttf)
+RuntimeError: Cannot locate font file: /usr/share/fonts/truetype/freefont/FreeSansBold.ttf
+[2025-03-29 19:11:44] WARNING - RPi GPIO failed, using null driver.
+[2025-03-29 19:11:44] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-03-29 19:11:44] WARNING - Module spidev not found.
+[2025-03-29 19:11:44] INFO - Starting development server for Illumino web interface
+[2025-03-29 19:11:44] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:11:44] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:11:44] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:11:44] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:11:44] INFO - Using null platform implementation
+[2025-03-29 19:11:44] INFO - no play port
+[2025-03-29 19:11:44] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:11:44] INFO - Initialized LED strip emulator with 176 pixels
+[2025-03-29 19:11:44] INFO - LED strip emulator began
+[2025-03-29 19:11:44] INFO - Found 6 songs
+[2025-03-29 19:11:44] INFO - Found 0 MIDI ports
+[2025-03-29 19:11:44] INFO - Mock: update_led_note_offsets
+[2025-03-29 19:11:44] INFO - Mock LCD menu initialized
+[2025-03-29 19:11:44] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-03-29 19:11:44] INFO - Mock: update_multicolor with 3 colors
+[2025-03-29 19:11:44] DEBUG - Mock LCD show: position=default, location=menu
+[2025-03-29 19:11:44] INFO - Starting webinterface
+[2025-03-29 19:11:44] INFO - WebSocket listening on: 192.168.50.11:8765
+[2025-03-29 19:11:44] INFO - LED Emulator WebSocket URL: ws://192.168.50.11:8765/ledemu
+[2025-03-29 19:11:44] INFO - Learning WebSocket URL: ws://192.168.50.11:8765/learning
+[2025-03-29 19:18:33] INFO - Cache not found
+[2025-03-29 19:18:33] WARNING - Converting failed
+[2025-03-29 19:18:38] WARNING - 'NoneType' object has no attribute 'send'
+[2025-03-29 19:22:39] WARNING - RPi GPIO failed, using null driver.
+[2025-03-29 19:22:39] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-03-29 19:22:39] WARNING - Module spidev not found.
+[2025-03-29 19:22:39] INFO - Starting development server for Illumino web interface
+[2025-03-29 19:22:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:22:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:22:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:22:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:22:39] INFO - Using null platform implementation
+[2025-03-29 19:22:39] INFO - no play port
+[2025-03-29 19:22:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-03-29 19:22:39] INFO - Initialized LED strip emulator with 176 pixels
+[2025-03-29 19:22:39] INFO - LED strip emulator began
+[2025-03-29 19:22:39] INFO - Found 6 songs
+[2025-03-29 19:22:39] INFO - Found 0 MIDI ports
+[2025-03-29 19:22:39] INFO - Mock: update_led_note_offsets
+[2025-03-29 19:22:39] INFO - Mock LCD menu initialized
+[2025-03-29 19:22:39] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-03-29 19:22:39] INFO - Mock: update_multicolor with 3 colors
+[2025-03-29 19:22:39] DEBUG - Mock LCD show: position=default, location=menu
+[2025-03-29 19:22:39] INFO - Starting webinterface
+[2025-03-29 19:22:39] INFO - WebSocket listening on: 192.168.50.11:8765
+[2025-03-29 19:22:39] INFO - LED Emulator WebSocket URL: ws://192.168.50.11:8765/ledemu
+[2025-03-29 19:22:39] INFO - Learning WebSocket URL: ws://192.168.50.11:8765/learning
+[2025-03-29 19:23:36] INFO - Mock LCD message: Recording started - 
+[2025-03-29 19:23:39] INFO - Mock LCD message: File saved - 2025-03-29 19:23.mid
+[2025-03-29 19:23:47] INFO - Mock LCD message: Recording started - 
+[2025-03-29 19:23:53] INFO - Mock LCD message: File saved - 2025-03-29 19:23.mid

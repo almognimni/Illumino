@@ -61,6 +61,11 @@ def network():
     return render_template('network.html')
 
 
+@webinterface.route('/led-emulator')
+def led_emulator():
+    return render_template('led_emulator.html')
+
+
 @webinterface.route('/upload', methods=['POST'])
 def upload_file():
     if request.method == 'POST':

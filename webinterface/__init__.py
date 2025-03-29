@@ -4,6 +4,8 @@ import websockets
 from lib.functions import get_ip_address
 import json
 from lib.log_setup import logger
+import os
+import platform
 
 UPLOAD_FOLDER = 'Songs/'
 
@@ -32,6 +34,7 @@ class AppState:
         self.platform = None
         self.ledemu_clients = set()  # Track active LED emulator clients
         self.ledemu_pause = False
+        self.is_development = platform.system() in ('Windows', 'Darwin') or not os.path.exists('/proc/device-tree/model')
 
 
 # Create a single instance of AppState
@@ -130,12 +133,23 @@ def start_server(loop):
                     f"LED emulator client disconnected (handler cleanup). Active clients: {len(app_state.ledemu_clients)}")
 
     async def main():
-        logger.info("WebSocket listening on: " + str(get_ip_address()) + ":8765")
-        async with websockets.serve(handler, "0.0.0.0", 8765):
+        ip_address = get_ip_address()
+        websocket_port = 8765
+        logger.info(f"WebSocket listening on: {ip_address}:{websocket_port}")
+        
+        # Create a more development-friendly message if we detect we're in development mode
+        if app_state.is_development:
+            logger.info(f"LED Emulator WebSocket URL: ws://{ip_address}:{websocket_port}/ledemu")
+            logger.info(f"Learning WebSocket URL: ws://{ip_address}:{websocket_port}/learning")
+            
+        async with websockets.serve(handler, "0.0.0.0", websocket_port):
             await asyncio.Future()
 
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(main())
+    try:
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(main())
+    except Exception as e:
+        logger.error(f"Error starting WebSocket server: {str(e)}")
 
 
 # Stop the WebSocket server and cancel pending tasks on shutdown

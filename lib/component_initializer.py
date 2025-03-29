@@ -7,34 +7,54 @@ from lib.learnmidi import LearnMIDI
 from lib.ledsettings import LedSettings
 from lib.ledstrip import LedStrip
 from lib.log_setup import logger
+from lib.menu_mock import MenuLCDMock
 from lib.menulcd import MenuLCD
 from lib.midiports import MidiPorts
-from lib.platform import PlatformRasp, PlatformNull, Hotspot
+from lib.platform import get_platform_instance
+from lib.hotspot import Hotspot
 from lib.savemidi import SaveMIDI
 from lib.usersettings import UserSettings
+from lib.platform_detector import PlatformDetector
 
 
 class ComponentInitializer:
     def __init__(self, args):
         self.args = args
-        self.platform = PlatformRasp() if self.args.appmode == "platform" else PlatformNull()
+        
+        # Initialize the platform detector
+        self.detector = PlatformDetector()
+        
+        # Get the appropriate platform instance
+        self.platform = get_platform_instance()
+        
         self.usersettings = UserSettings()
         self.midiports = MidiPorts(self.usersettings)
         self.ledsettings = LedSettings(self.usersettings)
-        self.ledstrip = LedStrip(self.usersettings, self.ledsettings, self.args.leddriver)
+        self.ledstrip = LedStrip(self.usersettings, self.ledsettings, self.args.leddriver if hasattr(self.args, 'leddriver') else "auto")
         self.learning = LearnMIDI(self.usersettings, self.ledsettings, self.midiports, self.ledstrip)
         self.hotspot = Hotspot(self.platform)
         self.saving = SaveMIDI()
-        self.menu = MenuLCD("config/menu.xml", self.args, self.usersettings, self.ledsettings,
-                            self.ledstrip, self.learning, self.saving, self.midiports,
-                            self.hotspot, self.platform)
+        
+        # Use the appropriate menu implementation based on the platform
+        if self.detector.is_raspberry_pi:
+            # Use the real LCD menu implementation on Raspberry Pi
+            self.menu = MenuLCD("config/menu.xml", self.args, self.usersettings, self.ledsettings,
+                                self.ledstrip, self.learning, self.saving, self.midiports,
+                                self.hotspot, self.platform)
+        else:
+            # Use the mock menu implementation on desktop
+            self.menu = MenuLCDMock("config/menu.xml", self.args, self.usersettings, self.ledsettings,
+                                   self.ledstrip, self.learning, self.saving, self.midiports,
+                                   self.hotspot, self.platform)
+            
         self.setup_components()
 
     def setup_components(self):
-        if not self.args.skipupdate:
+        # Only run update-related tasks on Raspberry Pi
+        if self.detector.is_raspberry_pi and not self.args.skipupdate:
             self.platform.copy_connectall_script()
-
-        self.platform.install_midi2abc()
+            self.platform.install_midi2abc()
+            
         logger.info(self.args)
 
         cmap.gradients.update(cmap.load_colormaps())

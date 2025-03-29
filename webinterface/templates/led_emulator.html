@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}LED Emulator{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">LED Strip Emulator</h1>
+    
+    <div class="mb-8">
+        <p class="mb-4">This is a visual representation of the LED strip. It shows the current state of each LED in the strip.</p>
+        <div class="flex space-x-4">
+            <button id="pause-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Pause
+            </button>
+            <button id="resume-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded hidden">
+                Resume
+            </button>
+        </div>
+    </div>
+    
+    <div class="bg-gray-900 p-4 rounded-lg shadow-lg">
+        <div id="led-strip" class="flex flex-wrap gap-1 justify-center">
+            <!-- LEDs will be added dynamically by JavaScript -->
+        </div>
+    </div>
+    
+    <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Connection Status</h2>
+        <p id="connection-status" class="p-2 rounded">Connecting to WebSocket...</p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ledStrip = document.getElementById('led-strip');
+        const connectionStatus = document.getElementById('connection-status');
+        const pauseButton = document.getElementById('pause-button');
+        const resumeButton = document.getElementById('resume-button');
+        
+        let isPaused = false;
+        let ledCount = 0;
+        let leds = [];
+        
+        // Get WebSocket URL from current location
+        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = location.hostname;
+        const port = '8765'; // WebSocket port
+        const wsUrl = `${protocol}//${host}:${port}/ledemu`;
+        
+        // Create WebSocket connection
+        const socket = new WebSocket(wsUrl);
+        
+        // Initialize LED elements on first message
+        function initLeds(count) {
+            ledCount = count;
+            ledStrip.innerHTML = '';
+            leds = [];
+            
+            for (let i = 0; i < count; i++) {
+                const led = document.createElement('div');
+                led.className = 'w-4 h-4 rounded-full bg-black';
+                led.setAttribute('data-led', i);
+                ledStrip.appendChild(led);
+                leds.push(led);
+            }
+        }
+        
+        // Update LED colors
+        function updateLeds(ledData) {
+            for (let i = 0; i < ledData.length; i++) {
+                if (i < leds.length) {
+                    const [r, g, b] = ledData[i];
+                    leds[i].style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                }
+            }
+        }
+        
+        // Connection opened
+        socket.addEventListener('open', (event) => {
+            connectionStatus.textContent = 'Connected to LED emulator';
+            connectionStatus.className = 'p-2 rounded bg-green-100 text-green-800';
+        });
+        
+        // Connection closed or error
+        socket.addEventListener('close', (event) => {
+            connectionStatus.textContent = 'Disconnected from LED emulator';
+            connectionStatus.className = 'p-2 rounded bg-red-100 text-red-800';
+        });
+        
+        socket.addEventListener('error', (event) => {
+            connectionStatus.textContent = 'Error connecting to LED emulator';
+            connectionStatus.className = 'p-2 rounded bg-red-100 text-red-800';
+        });
+        
+        // Listen for messages
+        socket.addEventListener('message', (event) => {
+            const data = JSON.parse(event.data);
+            
+            // Handle settings message (first message)
+            if (data.settings) {
+                console.log('Received settings:', data.settings);
+                // We'll initialize when we get the first LED data
+            }
+            
+            // Handle LED data
+            if (data.leds) {
+                if (leds.length === 0) {
+                    initLeds(data.leds.length);
+                }
+                updateLeds(data.leds);
+            }
+        });
+        
+        // Handle pause/resume
+        pauseButton.addEventListener('click', () => {
+            socket.send(JSON.stringify({ cmd: 'pause' }));
+            isPaused = true;
+            pauseButton.classList.add('hidden');
+            resumeButton.classList.remove('hidden');
+        });
+        
+        resumeButton.addEventListener('click', () => {
+            socket.send(JSON.stringify({ cmd: 'resume' }));
+            isPaused = false;
+            resumeButton.classList.add('hidden');
+            pauseButton.classList.remove('hidden');
+        });
+    });
+</script>
+{% endblock %} 

@@ -3,7 +3,18 @@ import time
 from xml.dom import minidom
 
 from lib.functions import fastColorWipe, find_between, clamp
-from lib.rpi_drivers import Color
+
+# Platform detection for importing the appropriate Color function
+try:
+    # First try to import from rpi_ws281x (if we're on a Raspberry Pi)
+    from rpi_ws281x import Color
+except ImportError:
+    # If that fails, use our emulator version
+    try:
+        from lib.ledstrip_emulator import Color
+    except ImportError:
+        # As a last resort, use the null driver
+        from lib.null_drivers import Color
 
 
 class LedSettings:

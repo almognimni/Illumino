@@ -1,14 +1,22 @@
 from lib.functions import *
 import lib.colormaps as cmap
-from lib.rpi_drivers import PixelStrip, ws
+from lib.platform_detector import PlatformDetector
 from lib.LED_drivers import PixelStrip_Emu
 from lib.log_setup import logger
 
 class LedStrip:
-    def __init__(self, usersettings, ledsettings, driver="rpi_ws281x"):
+    def __init__(self, usersettings, ledsettings, driver="auto"):
         self.usersettings = usersettings
         self.ledsettings = ledsettings
-        self.driver = driver
+        
+        # Initialize platform detector
+        self.platform_detector = PlatformDetector()
+        
+        # Use auto-detection if driver is set to "auto"
+        if driver == "auto":
+            self.driver = "rpi_ws281x" if self.platform_detector.is_raspberry_pi else "emu"
+        else:
+            self.driver = driver
 
         self.brightness_percent = int(self.usersettings.get_setting_value("brightness_percent"))
         self.led_number = int(self.usersettings.get_setting_value("led_count"))
@@ -47,25 +55,38 @@ class LedStrip:
 
         if self.driver == "rpi_ws281x":
             try:
+                # Get the NeoPixel class and LED strip constants from the platform detector
+                NeoPixel = self.platform_detector.get_led_strip_class()
+                strip_constants = self.platform_detector.get_led_strip_constants()
+                
                 # Create NeoPixel object with appropriate configuration.
-                self.strip = PixelStrip(int(self.led_number), self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT,
-                                            int(self.brightness), self.LED_CHANNEL, ws.WS2811_STRIP_GRB)
+                self.strip = NeoPixel(int(self.led_number), self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT,
+                                      int(self.brightness), self.LED_CHANNEL, strip_constants['WS2811_STRIP_GRB'])
                 # Intialize the library (must be called once before other functions).
                 self.strip.begin()
+                
+                # Only call releaseGIL if it exists (only on real rpi_ws281x)
                 if "releaseGIL" in dir(self.strip):
                     self.strip.releaseGIL()
+                    
                 self.change_gamma(self.led_gamma)
             except Exception as e:
                 logger.warning(e)
 
-                if isinstance(e, RuntimeError):
-                    # rpi_ws281x registers _cleanup() atexit, but if it's not initialized ws2811_fini will segfault.
-                    # Manually clean up memory, then bypass _cleanup() using knowledge that _cleanup() checks _leds first
-                    logger.info("Cleaning up ws281x instance.")
-                    ws.delete_ws2811_t(self.strip._leds)
-                    self.strip._leds = None
+                if hasattr(e, "__class__") and e.__class__.__name__ == "RuntimeError" and self.platform_detector.is_raspberry_pi:
+                    # Only attempt cleanup if we're on a Raspberry Pi with the real library
+                    try:
+                        # Import the real ws module for cleanup
+                        from rpi_ws281x import ws
+                        # rpi_ws281x registers _cleanup() atexit, but if it's not initialized ws2811_fini will segfault.
+                        # Manually clean up memory, then bypass _cleanup() using knowledge that _cleanup() checks _leds first
+                        logger.info("Cleaning up ws281x instance.")
+                        ws.delete_ws2811_t(self.strip._leds)
+                        self.strip._leds = None
+                    except ImportError:
+                        pass
 
-                logger.info("Failed to load LED strip.  Using emu driver.")
+                logger.info("Failed to load LED strip. Using emulator driver.")
                 self.strip = PixelStrip_Emu(int(self.led_number))
                 self.driver = "emu"
         elif self.driver == "emu":
@@ -75,9 +96,14 @@ class LedStrip:
     def change_gamma(self, value):
         self.led_gamma = float(value)
         if 0.01 <= self.led_gamma <= 10.0:
-            if self.driver == "rpi_ws281x":
-                # rpi_ws281x.py interface has no ported method to set gamma by factor, using direct ws
-                ws.ws2811_set_custom_gamma_factor(self.strip._leds, self.led_gamma)
+            if self.driver == "rpi_ws281x" and self.platform_detector.is_raspberry_pi:
+                try:
+                    # Import the real ws module to set gamma factor
+                    from rpi_ws281x import ws
+                    # rpi_ws281x.py interface has no ported method to set gamma by factor, using direct ws
+                    ws.ws2811_set_custom_gamma_factor(self.strip._leds, self.led_gamma)
+                except ImportError:
+                    pass
 
             # Rebuild colormaps
             cmap.generate_colormaps(cmap.gradients, self.led_gamma)
@@ -121,6 +147,15 @@ class LedStrip:
         self.usersettings.change_setting_value("reverse", self.reverse)
 
     def set_adjacent_colors(self, note, color, led_turn_off, fading=1):
+        # Import Color function from platform-appropriate module
+        if self.platform_detector.is_raspberry_pi:
+            try:
+                from rpi_ws281x import Color
+            except ImportError:
+                from lib.null_drivers import Color
+        else:
+            from lib.ledstrip_emulator import Color
+            
         if self.ledsettings.adjacent_mode == "RGB" and color != 0 and led_turn_off is not True:
             color = Color(int(self.ledsettings.adjacent_red * fading), int(self.ledsettings.adjacent_green * fading),
                           int(self.ledsettings.adjacent_blue * fading))

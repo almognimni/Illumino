@@ -1,4 +1,13 @@
-from rpi_ws281x import Color
+try:
+    # First try to import from rpi_ws281x (if we're on a Raspberry Pi)
+    from rpi_ws281x import Color
+except ImportError:
+    # If that fails, use our emulator version
+    try:
+        from lib.ledstrip_emulator import Color
+    except ImportError:
+        # As a last resort, use the null driver
+        from lib.null_drivers import Color
 
 
 class LEDEffectsProcessor:
