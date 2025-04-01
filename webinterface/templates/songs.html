@@ -640,6 +640,13 @@
                 </div>
             </div>
 
+            <div class="w-full m-auto mt-6 mb-6">
+                <div id="score_counter" class="flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-600 rounded-2xl w-full">
+                    <div class="text-2xl font-bold text-gray-600 dark:text-gray-400 mr-4" data-translate="score">Score</div>
+                    <div class="text-4xl font-mono" id="current_score">0</div>
+                </div>
+            </div>
+
             <div id="sheet_wrapper" style="height:80vh; margin-bottom: 100px;">
                 {% include 'sheet_music.html' %}
             </div>
@@ -680,3 +687,26 @@
 
     </div>
 </div>
+
+<script>
+let score = 0;
+
+function incrementScore() {
+    score++;
+    updateScoreDisplay();
+}
+
+function decrementScore() {
+    score = Math.max(0, score - 1);
+    updateScoreDisplay();
+}
+
+function resetScore() {
+    score = 0;
+    updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+    document.getElementById('current_score').textContent = score;
+}
+</script>
