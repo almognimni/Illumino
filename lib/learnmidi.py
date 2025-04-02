@@ -1,6 +1,7 @@
 import ast
 import threading
 import time
+import json
 
 import mido
 import subprocess
@@ -13,6 +14,7 @@ from lib.rpi_drivers import Color
 import numpy as np
 import pickle
 from lib.log_setup import logger
+from lib.score_manager import ScoreManager
 
 
 def find_nearest(array, target):
@@ -36,6 +38,9 @@ class LearnMIDI:
         self.ledsettings = ledsettings
         self.midiports = midiports
         self.ledstrip = ledstrip
+
+        # Initialize the score manager
+        self.score_manager = ScoreManager(usersettings)
 
         self.loading = 0
         self.practice = int(usersettings.get_setting_value("practice"))
@@ -283,7 +288,6 @@ class LearnMIDI:
                     self.ledstrip.strip.show()
 
     def handle_wrong_notes(self, wrong_notes):
-
         if self.show_wrong_notes != 1:
             return
 
@@ -300,6 +304,18 @@ class LearnMIDI:
             if velocity > 0:
                 self.ledstrip.strip.setPixelColor(note_position, Color(255, 0, 0))
                 self.mistakes_count += 1
+                
+                # Add this: Penalize for wrong note
+                self.score_manager.penalize_for_wrong_note()
+                # Send score update to frontend
+                self.socket_send.append(json.dumps({
+                    "type": "score_update",
+                    "score": self.score_manager.get_score(),
+                    "combo": self.score_manager.get_combo(),
+                    "multiplier": self.score_manager.get_multiplier(),
+                    "last_update": self.score_manager.get_last_score_update()
+                }))
+                
             else:
                 self.ledstrip.strip.setPixelColor(note_position, Color(0, 0, 0))
 
@@ -323,6 +339,18 @@ class LearnMIDI:
                 time.sleep(0.1)
         if self.loading == 4:
             self.is_started_midi = True  # Prevent restarting the Thread
+            
+            # Reset the score when starting a new learning session
+            self.score_manager.reset()
+            # Send score update to frontend
+            self.socket_send.append(json.dumps({
+                "type": "score_update",
+                "score": self.score_manager.get_score(),
+                "combo": self.score_manager.get_combo(), 
+                "multiplier": self.score_manager.get_multiplier(),
+                "last_update": 0
+            }))
+            
         elif self.loading == 5:
             self.is_started_midi = False  # Allow restarting the Thread
             return
@@ -400,6 +428,24 @@ class LearnMIDI:
                                     if velocity > 0:
                                         if note not in notes_pressed:
                                             notes_pressed.append(note)
+                                            
+                                            # Calculate delay from ideal hit time
+                                            current_time = time.time()
+                                            if self.next_note_time:
+                                                # Get delay in seconds
+                                                delay = current_time - self.next_note_time
+                                                
+                                                # Add score for correct note
+                                                self.score_manager.add_score_for_correct_note(delay)
+                                                
+                                                # Send score update to frontend
+                                                self.socket_send.append(json.dumps({
+                                                    "type": "score_update",
+                                                    "score": self.score_manager.get_score(),
+                                                    "combo": self.score_manager.get_combo(),
+                                                    "multiplier": self.score_manager.get_multiplier(),
+                                                    "last_update": self.score_manager.get_last_score_update()
+                                                }))
                                     else:
                                         try:
                                             notes_pressed.remove(note)

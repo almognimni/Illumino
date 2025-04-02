@@ -118,6 +118,11 @@
 	<is_loop_active>1</is_loop_active>
     <midi_logging>0</midi_logging>
     <is_hotspot_active>1</is_hotspot_active>
+    
+    <!-- Score settings -->
+    <score_base_score>100</score_base_score>
+    <score_max_delay>2.0</score_max_delay>
+    <score_penalty>500</score_penalty>
 
 	<led_gamma>1</led_gamma>
 

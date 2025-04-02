@@ -233,3 +233,200 @@ RuntimeError: Cannot locate font file: /usr/share/fonts/truetype/freefont/FreeSa
 [2025-04-01 14:36:08] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
 [2025-04-01 14:36:32] INFO - Loading song from cache
 [2025-04-01 14:36:32] WARNING - Converting failed
+[2025-04-01 15:28:37] WARNING - RPi GPIO failed, using null driver.
+[2025-04-01 15:28:37] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-01 15:28:37] WARNING - Module spidev not found.
+[2025-04-01 15:28:39] INFO - Starting development server for Illumino web interface
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Using null platform implementation
+[2025-04-01 15:28:39] INFO - no play port
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-01 15:28:39] INFO - LED strip emulator began
+[2025-04-01 15:28:39] INFO - Found 8 songs
+[2025-04-01 15:28:39] INFO - Found 0 MIDI ports
+[2025-04-01 15:28:39] INFO - Mock: update_led_note_offsets
+[2025-04-01 15:28:39] INFO - Mock LCD menu initialized
+[2025-04-01 15:28:39] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-01 15:28:39] INFO - Mock: update_multicolor with 3 colors
+[2025-04-01 15:28:39] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-01 15:28:39] INFO - Starting webinterface
+[2025-04-01 15:28:39] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-01 15:28:39] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-01 15:28:39] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-01 15:28:53] INFO - Loading song from cache
+[2025-04-01 15:28:53] WARNING - Converting failed
+[2025-04-02 12:44:58] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 12:44:58] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 12:44:58] WARNING - Module spidev not found.
+[2025-04-02 12:45:01] INFO - Starting development server for Illumino web interface
+[2025-04-02 12:45:01] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 12:45:01] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 12:45:01] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 12:45:01] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 12:45:01] INFO - Using null platform implementation
+[2025-04-02 12:45:01] INFO - no play port
+[2025-04-02 12:45:01] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 12:45:01] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 12:45:01] INFO - LED strip emulator began
+[2025-04-02 12:45:01] INFO - Found 8 songs
+[2025-04-02 12:45:01] INFO - Found 0 MIDI ports
+[2025-04-02 12:45:01] INFO - Mock: update_led_note_offsets
+[2025-04-02 12:45:01] INFO - Mock LCD menu initialized
+[2025-04-02 12:45:01] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-02 12:45:01] INFO - Mock: update_multicolor with 3 colors
+[2025-04-02 12:45:01] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-02 12:45:01] INFO - Starting webinterface
+[2025-04-02 12:45:01] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-02 12:45:01] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-02 12:45:01] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-02 12:45:21] INFO - Loading song from cache
+[2025-04-02 12:45:21] WARNING - Converting failed
+[2025-04-02 13:04:28] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 13:04:28] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 13:04:28] WARNING - Module spidev not found.
+[2025-04-02 13:04:28] INFO - Starting development server for Illumino web interface
+[2025-04-02 13:04:28] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:04:28] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:04:28] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:04:28] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:04:28] INFO - Using null platform implementation
+[2025-04-02 13:04:28] INFO - no play port
+[2025-04-02 13:04:28] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:04:28] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 13:04:28] INFO - LED strip emulator began
+[2025-04-02 13:04:28] INFO - Found 8 songs
+[2025-04-02 13:04:28] INFO - Found 0 MIDI ports
+[2025-04-02 13:04:28] INFO - Mock: update_led_note_offsets
+[2025-04-02 13:04:28] INFO - Mock LCD menu initialized
+[2025-04-02 13:04:28] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-02 13:04:29] INFO - Mock: update_multicolor with 3 colors
+[2025-04-02 13:04:29] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-02 13:04:29] INFO - Starting webinterface
+[2025-04-02 13:04:29] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-02 13:04:29] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-02 13:04:29] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-02 13:04:42] INFO - Loading song from cache
+[2025-04-02 13:04:42] WARNING - Converting failed
+[2025-04-02 13:16:55] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 13:16:55] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 13:16:55] WARNING - Module spidev not found.
+[2025-04-02 13:16:56] INFO - Starting development server for Illumino web interface
+[2025-04-02 13:16:56] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:16:56] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:16:56] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:16:56] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:16:56] INFO - Using null platform implementation
+[2025-04-02 13:16:56] INFO - no play port
+[2025-04-02 13:16:56] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 13:16:56] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 13:16:56] INFO - LED strip emulator began
+[2025-04-02 13:16:56] INFO - Found 8 songs
+[2025-04-02 13:16:56] INFO - Found 0 MIDI ports
+[2025-04-02 13:16:56] INFO - Mock: update_led_note_offsets
+[2025-04-02 13:16:56] INFO - Mock LCD menu initialized
+[2025-04-02 13:16:56] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-02 13:16:56] INFO - Mock: update_multicolor with 3 colors
+[2025-04-02 13:16:56] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-02 13:16:56] INFO - Starting webinterface
+[2025-04-02 13:16:56] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-02 13:16:56] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-02 13:16:56] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-02 13:17:27] INFO - Loading song from cache
+[2025-04-02 13:17:27] WARNING - Converting failed
+[2025-04-02 17:53:52] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 17:53:52] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 17:53:52] WARNING - Module spidev not found.
+[2025-04-02 17:53:53] INFO - Starting development server for Illumino web interface
+[2025-04-02 17:53:53] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:53:53] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:53:53] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:53:53] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:53:53] INFO - Using null platform implementation
+[2025-04-02 17:53:53] INFO - no play port
+[2025-04-02 17:53:53] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:53:53] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 17:53:53] INFO - LED strip emulator began
+[2025-04-02 17:53:53] ERROR - Unhandled Exception: 
+Traceback (most recent call last):
+  File "c:\Users\Owner\Illumino\Illumino\Illumino\dev_server.py", line 85, in <module>
+    main()
+  File "c:\Users\Owner\Illumino\Illumino\Illumino\dev_server.py", line 53, in main
+    component_initializer = ComponentInitializer(illumino_args)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\component_initializer.py", line 34, in __init__
+    self.learning = LearnMIDI(self.usersettings, self.ledsettings, self.midiports, self.ledstrip)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\learnmidi.py", line 43, in __init__
+    self.score_manager = ScoreManager(usersettings)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\score_manager.py", line 18, in __init__
+    usersettings.change_setting_value("score_base_score", self.base_score)
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\usersettings.py", line 69, in change_setting_value
+    self.set(name, value)
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\usersettings.py", line 66, in set
+    self.__setitem__(key, value)
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\usersettings.py", line 57, in __setitem__
+    self._xml_set(key, val)
+  File "C:\Users\Owner\Illumino\Illumino\Illumino\lib\usersettings.py", line 91, in _xml_set
+    raise Exception("XML path not found: " + xpath)
+Exception: XML path not found: score_base_score
+[2025-04-02 17:55:52] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 17:55:52] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 17:55:52] WARNING - Module spidev not found.
+[2025-04-02 17:55:52] INFO - Starting development server for Illumino web interface
+[2025-04-02 17:55:52] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:55:52] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:55:52] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:55:52] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:55:52] INFO - Using null platform implementation
+[2025-04-02 17:55:52] INFO - no play port
+[2025-04-02 17:55:52] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:55:52] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 17:55:52] INFO - LED strip emulator began
+[2025-04-02 17:55:52] INFO - Found 8 songs
+[2025-04-02 17:55:52] INFO - Found 0 MIDI ports
+[2025-04-02 17:55:52] INFO - Mock: update_led_note_offsets
+[2025-04-02 17:55:52] INFO - Mock LCD menu initialized
+[2025-04-02 17:55:52] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-02 17:55:53] INFO - Mock: update_multicolor with 3 colors
+[2025-04-02 17:55:53] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-02 17:55:53] INFO - Starting webinterface
+[2025-04-02 17:55:53] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-02 17:55:53] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-02 17:55:53] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-02 17:56:18] INFO - Loading song from cache
+[2025-04-02 17:56:18] WARNING - Converting failed
+[2025-04-02 17:56:32] INFO - Loading song from cache
+[2025-04-02 17:56:32] WARNING - Converting failed
+[2025-04-02 17:56:34] WARNING - Converting failed
+[2025-04-02 17:57:32] WARNING - Converting failed
+[2025-04-02 17:58:12] WARNING - RPi GPIO failed, using null driver.
+[2025-04-02 17:58:12] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-02 17:58:12] WARNING - Module spidev not found.
+[2025-04-02 17:58:12] INFO - Starting development server for Illumino web interface
+[2025-04-02 17:58:12] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:58:12] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:58:12] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:58:12] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:58:12] INFO - Using null platform implementation
+[2025-04-02 17:58:13] INFO - no play port
+[2025-04-02 17:58:13] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-02 17:58:13] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-02 17:58:13] INFO - LED strip emulator began
+[2025-04-02 17:58:13] INFO - Found 8 songs
+[2025-04-02 17:58:13] INFO - Found 0 MIDI ports
+[2025-04-02 17:58:13] INFO - Mock: update_led_note_offsets
+[2025-04-02 17:58:13] INFO - Mock LCD menu initialized
+[2025-04-02 17:58:13] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-02 17:58:13] INFO - Mock: update_multicolor with 3 colors
+[2025-04-02 17:58:13] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-02 17:58:13] INFO - Starting webinterface
+[2025-04-02 17:58:13] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-02 17:58:13] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-02 17:58:13] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-02 17:58:31] INFO - Loading song from cache
+[2025-04-02 17:58:31] WARNING - Converting failed

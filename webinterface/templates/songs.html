@@ -689,8 +689,13 @@
 </div>
 
 <script>
+// Score management
 let score = 0;
+let combo = 0;
+let scoreMultiplier = 1;
+let lastScoreUpdate = 0;
 
+// Legacy functions to maintain compatibility
 function incrementScore() {
     score++;
     updateScoreDisplay();
@@ -703,10 +708,151 @@ function decrementScore() {
 
 function resetScore() {
     score = 0;
+    combo = 0;
+    scoreMultiplier = 1;
     updateScoreDisplay();
 }
 
+// Update score display with animation effects
 function updateScoreDisplay() {
+    // Update main score
     document.getElementById('current_score').textContent = score;
+    
+    // If score counter doesn't have combo elements, add them
+    const scoreCounter = document.getElementById('score_counter');
+    if (!document.getElementById('combo_counter')) {
+        const comboDiv = document.createElement('div');
+        comboDiv.className = 'flex flex-col items-center justify-center ml-8';
+        comboDiv.innerHTML = `
+            <div class="text-base text-gray-600 dark:text-gray-400" data-translate="combo">Combo</div>
+            <div class="text-2xl font-mono" id="combo_counter">0</div>
+            <div class="text-base text-gray-600 dark:text-gray-400" data-translate="multiplier">Multiplier</div>
+            <div class="text-2xl font-mono" id="multiplier_counter">x1</div>
+        `;
+        scoreCounter.appendChild(comboDiv);
+        
+        // Add element for score changes
+        const scoreChangeDiv = document.createElement('div');
+        scoreChangeDiv.id = 'score_change';
+        scoreChangeDiv.className = 'absolute right-4 text-2xl font-mono opacity-0 transition-opacity duration-500';
+        scoreCounter.appendChild(scoreChangeDiv);
+    }
+    
+    // Update combo and multiplier
+    document.getElementById('combo_counter').textContent = combo;
+    document.getElementById('multiplier_counter').textContent = 'x' + scoreMultiplier;
+    
+    // Show score change animation
+    const scoreChangeElem = document.getElementById('score_change');
+    if (lastScoreUpdate !== 0) {
+        scoreChangeElem.textContent = lastScoreUpdate > 0 ? '+' + lastScoreUpdate : lastScoreUpdate;
+        scoreChangeElem.className = 'absolute right-4 text-2xl font-mono opacity-100 transition-opacity duration-500';
+        scoreChangeElem.style.color = lastScoreUpdate > 0 ? '#4CAF50' : '#F44336';
+        
+        // Hide after animation
+        setTimeout(() => {
+            scoreChangeElem.className = 'absolute right-4 text-2xl font-mono opacity-0 transition-opacity duration-500';
+        }, 1500);
+    }
 }
+
+// Initialize score settings UI elements if they don't exist
+function initScoreSettings() {
+    // Check if score settings section already exists
+    if (document.getElementById('score_settings')) {
+        return;
+    }
+    
+    // Find a good place to add score settings (after "Number of mistakes" section)
+    const mistakesSection = document.querySelector('[data-translate="number_of_mistakes"]').closest('.w-full');
+    const settingsContainer = document.createElement('div');
+    settingsContainer.id = 'score_settings';
+    settingsContainer.className = 'w-full md:w-1/2 px-3 md:mb-0 m-auto mt-4';
+    settingsContainer.innerHTML = `
+        <label class="block uppercase tracking-wide text-xs font-bold mt-2 text-gray-600 dark:text-gray-400"
+               data-translate="score_settings">
+            Score Settings
+        </label>
+        <div class="grid grid-cols-1 gap-4 mt-2">
+            <div class="flex items-center">
+                <span class="text-xs text-gray-600 dark:text-gray-400 w-32" data-translate="base_score">Base Score:</span>
+                <input onchange="change_setting('score_base_score', this.value)"
+                       id="base_score" type="number" value="100" min="10" max="1000" step="10"
+                       class="h-8 py-1 px-2 w-24 rounded-xl bg-gray-100 dark:bg-gray-600 appearance-none text-center">
+            </div>
+            <div class="flex items-center">
+                <span class="text-xs text-gray-600 dark:text-gray-400 w-32" data-translate="max_delay">Max Delay (sec):</span>
+                <input onchange="change_setting('score_max_delay', this.value)"
+                       id="max_delay" type="number" value="2.0" min="0.1" max="10" step="0.1"
+                       class="h-8 py-1 px-2 w-24 rounded-xl bg-gray-100 dark:bg-gray-600 appearance-none text-center">
+            </div>
+            <div class="flex items-center">
+                <span class="text-xs text-gray-600 dark:text-gray-400 w-32" data-translate="penalty">Penalty:</span>
+                <input onchange="change_setting('score_penalty', this.value)"
+                       id="penalty" type="number" value="500" min="0" max="1000" step="10"
+                       class="h-8 py-1 px-2 w-24 rounded-xl bg-gray-100 dark:bg-gray-600 appearance-none text-center">
+            </div>
+        </div>
+    `;
+    
+    // Insert after mistakes section
+    mistakesSection.parentNode.insertBefore(settingsContainer, mistakesSection.nextSibling);
+    
+    // Fetch initial settings values
+    getScoreSettings();
+}
+
+// Fetch score settings from the server
+function getScoreSettings() {
+    fetch('/api/get_score_settings')
+    .then(response => response.json())
+    .then(data => {
+        if (data.base_score) {
+            document.getElementById('base_score').value = data.base_score;
+        }
+        if (data.max_delay) {
+            document.getElementById('max_delay').value = data.max_delay;
+        }
+        if (data.penalty) {
+            document.getElementById('penalty').value = data.penalty;
+        }
+    })
+    .catch(error => console.error('Error fetching score settings:', error));
+}
+
+// Process score updates received via WebSocket
+function processScoreUpdate(data) {
+    score = data.score;
+    combo = data.combo;
+    scoreMultiplier = data.multiplier;
+    lastScoreUpdate = data.last_update;
+    updateScoreDisplay();
+}
+
+// Initialize score settings when document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initScoreSettings();
+    updateScoreDisplay();
+    
+    // Add event listener for WebSocket messages to catch score updates
+    if (typeof source !== 'undefined') {
+        const originalOnMessage = source.onmessage;
+        source.onmessage = function(event) {
+            // Call original handler first
+            if (originalOnMessage) {
+                originalOnMessage.call(this, event);
+            }
+            
+            // Handle score updates
+            if (event.data.includes('"type":"score_update"')) {
+                try {
+                    const data = JSON.parse(event.data);
+                    processScoreUpdate(data);
+                } catch (e) {
+                    console.error('Error processing score update:', e);
+                }
+            }
+        };
+    }
+});
 </script>

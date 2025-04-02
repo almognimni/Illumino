@@ -1272,6 +1272,24 @@ def change_setting():
 
         return jsonify(success=True)
 
+    # Add at the end of the change_setting function, before the return statement at the end
+    
+    # Score settings
+    if setting_name == "score_base_score":
+        app_state.usersettings.change_setting_value("score_base_score", int(value))
+        if hasattr(app_state.learning, 'score_manager'):
+            app_state.learning.score_manager.base_score = int(value)
+        
+    if setting_name == "score_max_delay":
+        app_state.usersettings.change_setting_value("score_max_delay", float(value))
+        if hasattr(app_state.learning, 'score_manager'):
+            app_state.learning.score_manager.max_delay = float(value)
+        
+    if setting_name == "score_penalty":
+        app_state.usersettings.change_setting_value("score_penalty", int(value))
+        if hasattr(app_state.learning, 'score_manager'):
+            app_state.learning.score_manager.penalty = int(value)
+
     return jsonify(success=True)
 
 
@@ -1699,3 +1717,13 @@ def pretty_print(dom):
 def pretty_save(file_path, sequences_tree):
     with open(file_path, "w", encoding="utf8") as outfile:
         outfile.write(pretty_print(sequences_tree))
+
+# Add a new route to handle score settings
+@webinterface.route('/api/get_score_settings', methods=['GET'])
+def get_score_settings():
+    score_settings = {
+        'base_score': app_state.usersettings.get_setting_value("score_base_score"),
+        'max_delay': app_state.usersettings.get_setting_value("score_max_delay"),
+        'penalty': app_state.usersettings.get_setting_value("score_penalty")
+    }
+    return jsonify(score_settings)
