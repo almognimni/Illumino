@@ -689,24 +689,198 @@
 </div>
 
 <script>
-let score = 0;
+// Scoring parameters - easily adjustable
+const baseScore = 100;        // Base score for a perfect hit
+const maxDelay = 2000;        // Maximum acceptable delay in milliseconds (2 seconds)
+const penalty = 500;          // Points deducted for wrong key press
 
-function incrementScore() {
-    score++;
+// Score tracking variables
+let score = 0;                // Current total score
+let combo = 0;                // Current combo count
+
+/**
+ * Calculate the score multiplier based on the current combo
+ * @returns {number} - The score multiplier based on combo tier
+ */
+function getScoreMultiplier() {
+    if (combo >= 40) return 5;      // 40+ combo: 5x multiplier
+    if (combo >= 30) return 4;      // 30-39 combo: 4x multiplier
+    if (combo >= 20) return 3;      // 20-29 combo: 3x multiplier
+    if (combo >= 10) return 2;      // 10-19 combo: 2x multiplier
+    return 1;                       // 0-9 combo: 1x multiplier
+}
+
+/**
+ * Calculate and add score for a correct key press
+ * @param {number} delay - The time difference between expected and actual key press (ms)
+ */
+function addScore(delay) {
+    // Convert delay to absolute value and ensure it's a number
+    delay = Math.abs(delay || 0);
+    
+    if (delay < maxDelay) {
+        // Calculate score based on timing accuracy
+        const timeRatio = (maxDelay - delay) / maxDelay;
+        const multiplier = getScoreMultiplier();
+        const scoreIncrement = Math.round(multiplier * baseScore * Math.pow(timeRatio, 2));
+        
+        // Update score and combo
+        score += scoreIncrement;
+        combo++;
+        
+        // Show feedback animation (optional)
+        showScoreFeedback(scoreIncrement, multiplier);
+    } else {
+        // Too late/early - no points
+        combo = 0;
+        showScoreFeedback(0, 0);
+    }
+    
     updateScoreDisplay();
 }
 
-function decrementScore() {
-    score = Math.max(0, score - 1);
+/**
+ * Apply penalty for incorrect key press
+ */
+function applyPenalty() {
+    // Decrement score but don't go below zero
+    score = Math.max(0, score - penalty);
+    // Reset combo
+    combo = 0;
+    
+    // Show negative feedback
+    showScoreFeedback(-penalty, 0);
     updateScoreDisplay();
 }
 
+/**
+ * Display visual feedback for score changes
+ * @param {number} points - Points gained or lost
+ * @param {number} multiplier - Current score multiplier
+ */
+function showScoreFeedback(points, multiplier) {
+    // Create a temporary element to show the points
+    const feedback = document.createElement('div');
+    
+    // Style based on points (positive, zero, or negative)
+    if (points > 0) {
+        feedback.textContent = `+${points} (x${multiplier})`;
+        feedback.className = 'score-feedback score-increase';
+    } else if (points < 0) {
+        feedback.textContent = points;
+        feedback.className = 'score-feedback score-decrease';
+    } else {
+        feedback.textContent = 'MISS';
+        feedback.className = 'score-feedback score-miss';
+    }
+    
+    // Add to DOM near the score display
+    const scoreCounter = document.getElementById('score_counter');
+    scoreCounter.appendChild(feedback);
+    
+    // Animate and remove after animation completes
+    setTimeout(() => {
+        feedback.classList.add('fade-out');
+        setTimeout(() => {
+            scoreCounter.removeChild(feedback);
+        }, 500);
+    }, 10);
+}
+
+/**
+ * Update the score display
+ */
+function updateScoreDisplay() {
+    // Update score number
+    document.getElementById('current_score').textContent = score;
+    
+    // Update combo counter if displayed
+    const comboDisplay = document.getElementById('combo_counter');
+    if (comboDisplay) {
+        comboDisplay.textContent = combo;
+    }
+    
+    // Update multiplier display if shown
+    const multiplierDisplay = document.getElementById('score_multiplier');
+    if (multiplierDisplay) {
+        multiplierDisplay.textContent = `x${getScoreMultiplier()}`;
+    }
+}
+
+/**
+ * Reset the score and combo
+ */
 function resetScore() {
     score = 0;
+    combo = 0;
     updateScoreDisplay();
 }
 
-function updateScoreDisplay() {
-    document.getElementById('current_score').textContent = score;
+// Add these styles for the score feedback animations
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+.score-feedback {
+    position: absolute;
+    font-size: 1.2rem;
+    font-weight: bold;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s, transform 0.5s;
+    pointer-events: none;
 }
+.score-increase {
+    color: #10B981; /* Green */
+}
+.score-decrease {
+    color: #EF4444; /* Red */
+}
+.score-miss {
+    color: #9CA3AF; /* Gray */
+}
+.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+/* Add combo display near score */
+#score_counter {
+    position: relative;
+}
+</style>
+`);
+
+// Add combo information to the score display
+document.addEventListener('DOMContentLoaded', function() {
+    const scoreCounter = document.getElementById('score_counter');
+    if (scoreCounter) {
+        // Modify score counter to include combo and multiplier
+        scoreCounter.classList.add('justify-between');
+        
+        // Create combo display element
+        const comboDisplay = document.createElement('div');
+        comboDisplay.className = 'flex flex-col items-center';
+        comboDisplay.innerHTML = `
+            <div class="text-sm font-bold text-gray-600 dark:text-gray-400" data-translate="combo">Combo</div>
+            <div class="text-2xl font-mono" id="combo_counter">0</div>
+        `;
+        
+        // Create multiplier display element
+        const multiplierDisplay = document.createElement('div');
+        multiplierDisplay.className = 'flex flex-col items-center';
+        multiplierDisplay.innerHTML = `
+            <div class="text-sm font-bold text-gray-600 dark:text-gray-400" data-translate="multiplier">Multiplier</div>
+            <div class="text-2xl font-mono" id="score_multiplier">x1</div>
+        `;
+        
+        // Add elements to the score counter
+        scoreCounter.appendChild(comboDisplay);
+        scoreCounter.appendChild(multiplierDisplay);
+    }
+});
+
+// Example function calls for reference (these should be replaced with actual note-hit events)
+// addScore(0);    // Perfect timing - maximum score
+// addScore(500);  // Half a second delay
+// addScore(1500); // 1.5 second delay
+// applyPenalty(); // Wrong note
 </script>

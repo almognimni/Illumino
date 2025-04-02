@@ -233,3 +233,29 @@ RuntimeError: Cannot locate font file: /usr/share/fonts/truetype/freefont/FreeSa
 [2025-04-01 14:36:08] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
 [2025-04-01 14:36:32] INFO - Loading song from cache
 [2025-04-01 14:36:32] WARNING - Converting failed
+[2025-04-01 15:28:37] WARNING - RPi GPIO failed, using null driver.
+[2025-04-01 15:28:37] WARNING - Module rpi_ws281x not found, using null driver.
+[2025-04-01 15:28:37] WARNING - Module spidev not found.
+[2025-04-01 15:28:39] INFO - Starting development server for Illumino web interface
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Using null platform implementation
+[2025-04-01 15:28:39] INFO - no play port
+[2025-04-01 15:28:39] INFO - Platform detection: Raspberry Pi = False, Development mode = True
+[2025-04-01 15:28:39] INFO - Initialized LED strip emulator with 176 pixels
+[2025-04-01 15:28:39] INFO - LED strip emulator began
+[2025-04-01 15:28:39] INFO - Found 8 songs
+[2025-04-01 15:28:39] INFO - Found 0 MIDI ports
+[2025-04-01 15:28:39] INFO - Mock: update_led_note_offsets
+[2025-04-01 15:28:39] INFO - Mock LCD menu initialized
+[2025-04-01 15:28:39] INFO - Namespace(clear=False, display=None, fontdir=None, port=5000, skipupdate=False, webinterface=True, rotatescreen='false', appmode='platform', leddriver='rpi_ws281x')
+[2025-04-01 15:28:39] INFO - Mock: update_multicolor with 3 colors
+[2025-04-01 15:28:39] DEBUG - Mock LCD show: position=default, location=menu
+[2025-04-01 15:28:39] INFO - Starting webinterface
+[2025-04-01 15:28:39] INFO - WebSocket listening on: 192.168.169.64:8765
+[2025-04-01 15:28:39] INFO - LED Emulator WebSocket URL: ws://192.168.169.64:8765/ledemu
+[2025-04-01 15:28:39] INFO - Learning WebSocket URL: ws://192.168.169.64:8765/learning
+[2025-04-01 15:28:53] INFO - Loading song from cache
+[2025-04-01 15:28:53] WARNING - Converting failed
