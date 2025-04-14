@@ -1397,3 +1397,33 @@ function handle_confirmation_button(element, delay = 1000) {
         element.classList.remove('pointer-events-none', "animate-pulse");
     }, delay);
 }
+
+
+//Test
+function initializeScoreWebSocket() {
+    const socket = new WebSocket('ws://' + window.location.hostname + ':8765/learning');
+
+    socket.addEventListener('message', function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "score_update") {
+            const scoreElement = document.getElementById('score_value');
+            if (scoreElement) {
+                scoreElement.innerText = data.score; // Update the score display
+            }
+        }
+    });
+
+    socket.addEventListener('error', function (error) {
+        console.error('WebSocket error:', error);
+    });
+
+    socket.addEventListener('close', function () {
+        console.warn('WebSocket connection closed. Attempting to reconnect...');
+        setTimeout(initializeScoreWebSocket, 5000); // Retry connection after 5 seconds
+    });
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function () {
+    initializeScoreWebSocket();
+});

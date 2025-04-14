@@ -81,6 +81,8 @@ class LearnMIDI:
         self.number_of_mistakes = int(usersettings.get_setting_value("number_of_mistakes"))
         self.awaiting_restart_loop = False
 
+        self.score = 0
+
     def add_instance(self, menu):
         self.menu = menu
 
@@ -300,6 +302,7 @@ class LearnMIDI:
             if velocity > 0:
                 self.ledstrip.strip.setPixelColor(note_position, Color(255, 0, 0))
                 self.mistakes_count += 1
+                self.score -= 1
             else:
                 self.ledstrip.strip.setPixelColor(note_position, Color(0, 0, 0))
 
@@ -400,6 +403,9 @@ class LearnMIDI:
                                     if velocity > 0:
                                         if note not in notes_pressed:
                                             notes_pressed.append(note)
+                                            self.score += 1
+                                            self.socket_send.append({"type": "score_update", "score": self.score})
+
                                     else:
                                         try:
                                             notes_pressed.remove(note)
