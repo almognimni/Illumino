@@ -104,6 +104,7 @@ class LearnMIDI:
         self.number_of_mistakes = int(usersettings.get_setting_value("number_of_mistakes"))
         self.awaiting_restart_loop = False
         self.score = 0 
+        self.combo = 0
 
     def add_instance(self, menu):
         self.menu = menu
@@ -329,6 +330,7 @@ class LearnMIDI:
 
         if self.mistakes_count > self.number_of_mistakes > 0:
             self.mistakes_count = 0
+
             self.restart_loop()
 
         self.ledstrip.strip.show()
@@ -356,6 +358,10 @@ class LearnMIDI:
         keep_looping = True
         while keep_looping:
             time.sleep(1)
+            self.score = 0
+            self.combo
+            my_logger.debug("keep_looping - score: " + str(self.score))
+
             try:
                 fastColorWipe(self.ledstrip.strip, True, self.ledsettings)
                 time_prev = time.time()
@@ -420,6 +426,7 @@ class LearnMIDI:
                                         if velocity > 0:
                                             
                                             my_logger.debug("worng note pressed" + str(self.score))
+                                            self.combo = 0
 
                                             self.pending_software_notes.clear()
                                         continue
@@ -428,6 +435,7 @@ class LearnMIDI:
                                         if note not in notes_pressed:
                                             notes_pressed.append(note)
                                             self.score += 1
+                                            self.combo += 1
                                             my_logger.debug("score: velocity line 428 " + str(self.score))
 
                                     else:
