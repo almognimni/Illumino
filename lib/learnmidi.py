@@ -108,9 +108,13 @@ class LearnMIDI:
         self.mistakes_count = 0
         self.number_of_mistakes = int(usersettings.get_setting_value("number_of_mistakes"))
         self.awaiting_restart_loop = False
-        ##self.score = 0 
+        ##self.score = 0
         ##self.combo = 0
         self.score_manager = ScoreManager()
+
+        # Lists to store timing data: (delay_from_expected, absolute_midi_time)
+        self.right_hand_timing = []
+        self.left_hand_timing = []
 
 
     def add_instance(self, menu):
@@ -264,6 +268,7 @@ class LearnMIDI:
             self.loading = 5  # 5 = Error!
             self.is_loaded_midi.clear()
 
+
     # predict future notes in MIDI messages
     def predict_future_notes(self, starting_note, ending_note, notes_to_press):
 
@@ -335,8 +340,8 @@ class LearnMIDI:
                  
                 # Add this: Penalize for wrong note
                 self.score_manager.penalize_for_wrong_note()
-                my_logger.debug("wrong note - score:" +str(self.score_manager.get_score()))
-                my_logger.debug("panelty" +str(self.score_manager.get_last_score_update()))
+                # my_logger.debug("wrong note - score:" +str(self.score_manager.get_score()))
+                # my_logger.debug("panelty" +str(self.score_manager.get_last_score_update()))
                 # # Send score update to frontend
                 # self.socket_send.append(json.dumps({
                 #     "type": "score_update",
@@ -378,7 +383,10 @@ class LearnMIDI:
             self.is_started_midi = True  # Prevent restarting the Thread
                 # Reset the score when starting a new learning session
             self.score_manager.reset()
-            my_logger.debug("score reset" +str(self.score_manager.get_score()))
+            # my_logger.debug("score reset" +str(self.score_manager.get_score()))
+            self.right_hand_timing.clear()
+            self.left_hand_timing.clear()
+            midi_time = 0
             # # Send score update to frontend
             # self.socket_send.append(json.dumps({
             #     "type": "score_update",
@@ -408,6 +416,10 @@ class LearnMIDI:
             # self.combo
             # my_logger.debug("keep_looping - score: " + str(self.score))
             self.score_manager.reset()
+            self.right_hand_timing.clear()
+            self.left_hand_timing.clear()
+            midi_time = 0
+            my_logger.debug("midi_time  - reset" +str(midi_time))
             my_logger.debug("score reset keep looping" +str(self.score_manager.get_score()))
             self.socket_send.append(json.dumps({
                 "type": "score_update",
@@ -500,19 +512,18 @@ class LearnMIDI:
                                                 
                                                 # Add score for correct note
                                                 self.score_manager.add_score_for_correct_note(delay)
-                                                my_logger.debug("valocity - correct note - score:" + str(self.score_manager.get_score()))
-                                                my_logger.debug("increment" +str(self.score_manager.get_last_score_update()))
-                                                my_logger.debug("combo" +str(self.score_manager.get_combo()))
-                                               
+                                                # my_logger.debug("valocity - correct note - score:" + str(self.score_manager.get_score()))
+                                                # my_logger.debug("increment" +str(self.score_manager.get_last_score_update()))
+                                                # my_logger.debug("combo" +str(self.score_manager.get_combo()))
 
-                                                # # Send score update to frontend
-                                                # self.socket_send.append(json.dumps({
-                                                #     "type": "score_update",
-                                                #     "score": self.score_manager.get_score(),
-                                                #     "combo": self.score_manager.get_combo(),
-                                                #     "multiplier": self.score_manager.get_multiplier(),
-                                                #     "last_update": self.score_manager.get_last_score_update()
-                                                # }))
+                                                midi_time += tDelay
+                                                my_logger.debug("midi_time" +str(midi_time))
+                                                if msg.channel == 1:
+                                                    self.right_hand_timing.append(delay, midi_time)
+                                                if msg.channel == 2:
+                                                    self.left_hand_timing.append(delay, midi_time)
+                                                my_logger.debug("left hand timing:" +str(self.left_hand_timing))
+                                                my_logger.debug("right hand timing:" +str(self.right_hand_timing))
                                                 self.socket_send.append(json.dumps({
                                                     "type": "score_update",
                                                     "score": self.score_manager.get_score(),
