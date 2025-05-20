@@ -2681,8 +2681,8 @@ he: {
     rainbow_colors: "צבעי קשת",
     speed: "מהירות",
     gradient: "גרדיינט",
-    scale_coloring: "צביעת סולם", //////////////////////////////
-    velocity_rainbow: "קשת לפי עוצמה",/////////////////////////////
+    scale_coloring: "צביעת סולם",
+    velocity_rainbow: "קשת לפי עוצמה",
 
     offset: "היסט",
     scale: "סולם",/////////////////////////
@@ -2695,8 +2695,8 @@ he: {
     period_in_seconds: "תקופה בשניות",
     start: "התחלה",
     end: "סיום",
-    color_for_in_scale: "צבע לתווים בסולם",/////////////////////////
-    color_for_not_in_scale: "צבע לתווים מחוץ לסולם",/////////////////////////
+    color_for_in_scale: "צבע לתווים בסולם",
+    color_for_not_in_scale: "צבע לתווים מחוץ לסולם",
     scale_key: "טון הסולם",
 
     //lightmode

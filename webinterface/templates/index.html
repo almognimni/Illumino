@@ -16,7 +16,7 @@
     <link href="{{ url_for('static', filename='sheet_music.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='tailwind.css') }}" rel="stylesheet">
 
-    <!-- Changed Chart.js links to local -->
+    <!-- local links to chart plugins -->
     <script src="{{ url_for('static', filename='js/lib/chart.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/lib/chartjs-adapter-date-fns.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/lib/chartjs-plugin-annotation.min.js') }}"></script>
@@ -28,10 +28,6 @@
 
 
 <script>
-    // <<< Removed diagnostic log >>>
-</script>
-
-<script>
     function establish_socket_connection(try_count) {
         console.log("Connecting to websocket")
         const socket = new WebSocket('ws://' + window.location.hostname + ':8765/learning');
@@ -41,7 +37,6 @@
         });
         socket.addEventListener('message', function (event) {
             // Define handler functions (can be moved to ui.js and attached to window)
-            // Ensure handleScoreUpdate and handleSessionSummary are defined (e.g., in ui.js)
             if (typeof window.handleTimeUpdate !== 'function') {
                  window.handleTimeUpdate = function(timeValue) { 
                     // Check if go_to_time exists and call it
@@ -64,7 +59,6 @@
                      if (typeof (textarea) != 'undefined' && textarea != null) {
                         const d = new Date();
                         var t = "\r\n" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "." + d.getMilliseconds() + " "
-                        // Assuming rawData starts with "midi_event"
                         textarea.value += t + rawData.replace("midi_event", ""); 
                         textarea.scrollTop = textarea.scrollHeight;
                     }
@@ -485,8 +479,6 @@
                                     <a id="ko" href="#"
                                        class="block px-3 py-2 text-sm text-white hover:bg-gray-700 hover:text-gray-200"
                                        role="menuitem">한국어 (AI translation)</a>
-
-
                                 </div>
                             </div>
                         </div>
@@ -589,7 +581,7 @@
     </footer>
 </div>
 
-<!-- External Libraries First -->
+<!-- Load External Libraries -->
 <script src="../static/alpine.min.js" defer></script>
 <script src="../static/jquery-1.11.1.min.js" defer></script>
 <script src="../static/html-midi-player.js" defer></script>
