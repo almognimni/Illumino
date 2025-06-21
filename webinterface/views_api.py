@@ -1315,6 +1315,25 @@ def change_setting():
         else:
             return jsonify(success=False, error="Failed to change hotspot password")
 
+    if setting_name == "black_hands_color":
+        if value == "true":
+            app_state.learning.prev_hand_colorL = app_state.learning.hand_colorL
+            app_state.usersettings.change_setting_value("prev_hand_colorL", app_state.learning.hand_colorL)
+            app_state.learning.hand_colorL = 8
+            app_state.usersettings.change_setting_value("hand_colorL", 8)
+
+            app_state.learning.prev_hand_colorR = app_state.learning.hand_colorR
+            app_state.usersettings.change_setting_value("prev_hand_colorR", app_state.learning.hand_colorR)
+            app_state.learning.hand_colorR = 8
+            app_state.usersettings.change_setting_value("hand_colorR", 8)
+        else:
+            app_state.usersettings.change_setting_value("hand_colorL", app_state.learning.prev_hand_colorL)
+            app_state.learning.hand_colorL = app_state.learning.prev_hand_colorL
+            
+            app_state.usersettings.change_setting_value("hand_colorR", app_state.learning.prev_hand_colorR)
+            app_state.learning.hand_colorR = app_state.learning.prev_hand_colorR
+        return jsonify(success=True)
+
     return jsonify(success=True)
 
 
