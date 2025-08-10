@@ -12,6 +12,16 @@ class ProfileManager:
     """
 
     def __init__(self, db_path: str = "profiles.db", songs_dir: str = "Songs"):
+        # Resolve relative DB path into project 'data' directory so file is visible & persistent
+        if not os.path.isabs(db_path):
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            data_dir = os.path.join(project_root, 'data')
+            try:
+                os.makedirs(data_dir, exist_ok=True)
+            except OSError:
+                # Fallback: keep relative path if directory cannot be created
+                data_dir = os.path.abspath(project_root)
+            db_path = os.path.join(data_dir, db_path)
         self.db_path = db_path
         self.songs_dir = songs_dir
         self._lock = threading.Lock()

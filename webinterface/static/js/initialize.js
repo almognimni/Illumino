@@ -212,6 +212,10 @@ function initialize_songs() {
     }
     get_songs();
     initialize_upload();
+    // Initialize profiles UI (defined in profiles.js)
+    if (typeof window.initProfilesOnSongsPage === 'function') {
+        window.initProfilesOnSongsPage();
+    }
     window.addEventListener('resize', function (event) {
         document.getElementById('myVisualizer').config.whiteNoteWidth = document.getElementById('player_and_songs').offsetWidth / 54;
     }, true);
