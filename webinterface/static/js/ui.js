@@ -1288,7 +1288,22 @@ function get_songs() {
                 document.getElementById("sort_by_date").classList.add("text-gray-800", "dark:text-gray-200");
                 document.getElementById("sort_by_name").classList.remove("text-gray-800", "dark:text-gray-200");
             }
-
+            // Fetch highscores if profile selected
+            if(window.currentProfileId){
+                fetch('/api/get_highscores?profile_id=' + window.currentProfileId)
+                    .then(r=>r.json())
+                    .then(data=>{
+                        if(!data.success) return;
+                        const hs = data.highscores || {};
+                        document.querySelectorAll('.song_highscore_cell').forEach(cell=>{
+                            const song = cell.getAttribute('data-song');
+                            const val = hs[song] !== undefined ? hs[song] : 0;
+                            const span = cell.querySelector('.song_highscore_value');
+                            if(span) span.textContent = val;
+                        });
+                    })
+                    .catch(()=>{});
+            }
         }
         translateStaticContent();
     };
