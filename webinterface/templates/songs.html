@@ -1,9 +1,10 @@
 <div class="transition duration-300 slide-in-content grid grid-cols-1 gap-6 w-full lg:w-4/5 xl:w-4/5 2xl:w-3/5 m-auto">
     <!-- Profiles Section -->
     <div id="profiles_section" class="flex-1 bg-gray-200 dark:bg-gray-700 shadow-md rounded-lg p-4">
-        <div class="flex flex-wrap items-center space-x-4 mb-2">
-            <div class="text-sm font-semibold text-gray-600 dark:text-gray-300" data-translate="profile_label">Profile</div>
+        <div class="flex flex-wrap items-center gap-3 mb-2">
+            <label for="profile_select" class="text-sm font-semibold text-gray-600 dark:text-gray-300" data-translate="profile_label">Profile</label>
             <select id="profile_select" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm text-gray-700 dark:text-gray-200 min-w-[160px]"></select>
+            <input id="profile_name_input" type="text" placeholder="New profile" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 w-40" />
             <button id="create_profile_btn" class="bg-teal-500 hover:bg-teal-600 text-white text-sm font-semibold px-3 py-1 rounded" data-translate="create_profile">Create</button>
         </div>
         <div id="profile_message" class="text-xs text-gray-500 dark:text-gray-400"></div>
@@ -757,9 +758,10 @@
 // Immediately-invoked function to isolate scope for profiles handling on songs page
 (function(){
     const selectEl = document.getElementById('profile_select');
+    const inputEl = document.getElementById('profile_name_input');
     const msgEl = document.getElementById('profile_message');
     const createBtn = document.getElementById('create_profile_btn');
-    if(!selectEl || !createBtn) return; // page not ready / element missing
+    if(!selectEl || !createBtn) return;
 
     function showMsg(text, isError=false){
         if(!msgEl) return;
@@ -798,34 +800,44 @@
             .catch(()=>showMsg('Failed to load profiles', true));
     }
 
-    createBtn.addEventListener('click', ()=>{
-        const name = prompt('Enter new profile name');
-        if(!name) return;
+    function createProfile(){
+        const name = (inputEl.value || '').trim();
+        if(!name){
+            showMsg('Enter a profile name', true);
+            inputEl.focus();
+            return;
+        }
         fetch('/api/create_profile', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({name: name.trim()})
+            body: JSON.stringify({name})
         }).then(r=>r.json())
           .then(resp=>{
               if(resp.success){
                   window.currentProfileId = resp.profile.id;
                   showMsg('Profile created');
+                  inputEl.value='';
                   loadProfiles();
+                  // Reload songs highscores
+                  if(typeof get_songs === 'function') get_songs();
               } else {
                   showMsg(resp.error || 'Error creating profile', true);
               }
           })
           .catch(()=>showMsg('Network error creating profile', true));
-    });
+    }
+
+    createBtn.addEventListener('click', createProfile);
+    inputEl.addEventListener('keyup', (e)=>{ if(e.key==='Enter'){ createProfile(); }});
 
     selectEl.addEventListener('change', function(){
         window.currentProfileId = this.value || null;
         if(this.value){
             showMsg('Selected profile: ' + this.options[this.selectedIndex].text);
+            if(typeof get_songs === 'function') get_songs();
         }
     });
 
-    // Expose loadProfiles globally if other scripts need to refresh
     window.loadProfiles = loadProfiles;
     loadProfiles();
 })();
