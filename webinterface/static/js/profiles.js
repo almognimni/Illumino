@@ -20,7 +20,7 @@
             msgEl.classList.add(isError ? 'text-red-400' : 'text-teal-400');
         }
 
-        function loadProfiles(){
+    function loadProfiles(){
             fetch('/api/get_profiles')
                 .then(r=>r.json())
                 .then(data=>{
@@ -44,6 +44,8 @@
                     });
                     if(!window.currentProfileId && profiles[0]){
                         window.currentProfileId = profiles[0].id;
+                        // Sync selection to backend
+                        fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                     }
                     showMsg('Profiles loaded');
                 })
@@ -67,6 +69,8 @@
                       window.currentProfileId = resp.profile.id;
                       showMsg('Profile created');
                       inputEl.value='';
+                      // Sync selection to backend
+                      fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                       loadProfiles();
                       if(typeof get_songs === 'function') get_songs();
                   } else {
@@ -84,6 +88,8 @@
         inputEl.addEventListener('keyup', (e)=>{ if(e.key==='Enter'){ createProfile(); }});
         selectEl.addEventListener('change', function(){
             window.currentProfileId = this.value || null;
+            // Sync selection to backend (null or id)
+            fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
             if(this.value){
                 showMsg('Selected profile: ' + this.options[this.selectedIndex].text);
                 if(typeof get_songs === 'function') get_songs();
@@ -148,6 +154,7 @@
                 });
                 if(!window.currentProfileId && profiles[0]){
                     window.currentProfileId = profiles[0].id;
+                    fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                 }
                 showMsg('Profiles loaded');
             })
@@ -172,6 +179,7 @@
                   window.currentProfileId = resp.profile.id;
                   showMsg('Profile created');
                   if(state.inputEl) state.inputEl.value='';
+                  fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                   loadProfiles();
                   if(typeof get_songs === 'function') get_songs();
               } else {
@@ -191,6 +199,7 @@
         if(state.selectEl){
             state.selectEl.addEventListener('change', function(){
                 window.currentProfileId = this.value || null;
+                fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                 if(this.value){
                     showMsg('Selected profile: ' + this.options[this.selectedIndex].text);
                     if(typeof get_songs === 'function') get_songs();

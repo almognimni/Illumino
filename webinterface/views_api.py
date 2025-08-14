@@ -1795,3 +1795,18 @@ def api_update_highscore():
         return jsonify(success=False, error="Invalid payload"), 400
     changed = app_state.profile_manager.update_highscore(profile_id, song_name, new_score)
     return jsonify(success=True, updated=changed)
+
+# Track currently selected profile on the backend for use by learning logic
+@webinterface.route('/api/set_current_profile', methods=['POST'])
+def api_set_current_profile():
+    data = request.get_json(silent=True) or {}
+    pid = data.get('profile_id')
+    try:
+        app_state.current_profile_id = int(pid) if pid is not None and pid != '' else None
+    except (TypeError, ValueError):
+        return jsonify(success=False, error="profile_id must be integer or empty"), 400
+    return jsonify(success=True, profile_id=app_state.current_profile_id)
+
+@webinterface.route('/api/get_current_profile', methods=['GET'])
+def api_get_current_profile():
+    return jsonify(success=True, profile_id=app_state.current_profile_id)
