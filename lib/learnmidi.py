@@ -666,7 +666,15 @@ class LearnMIDI:
                     # Use ProfileManager directly if available
                     pm = getattr(app_state, 'profile_manager', None)
                     if pm:
-                        pm.update_highscore(int(profile_id), self.current_song_name, new_score)
+                        updated = pm.update_highscore(int(profile_id), self.current_song_name, new_score)
+                        if updated:
+                            # Notify UI via websocket to update the highscore cell dynamically
+                            self.socket_send.append(json.dumps({
+                                "type": "highscore_update",
+                                "song_name": self.current_song_name,
+                                "score": new_score,
+                                "profile_id": int(profile_id)
+                            }))
             except Exception as e:
                 logger.warning(f"Failed to update highscore: {e}")
 

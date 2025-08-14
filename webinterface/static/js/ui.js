@@ -1576,6 +1576,18 @@ function handleScoreUpdate(data) {
     }
 }
 
+function handleHighscoreUpdate(data){
+    if(data.type !== 'highscore_update') return;
+    // Only update if current profile matches
+    if(window.currentProfileId && parseInt(window.currentProfileId) !== parseInt(data.profile_id)){
+        return;
+    }
+    // Find the highscore cell for this song and update its value
+    const selector = `.song_highscore_cell[data-song="${CSS.escape(data.song_name)}"] .song_highscore_value`;
+    const span = document.querySelector(selector);
+    if(span){ span.textContent = data.score; }
+}
+
 let summaryTimeout = null; // To store the timeout ID
 let summaryChart = null; // To store the Chart instance
 
