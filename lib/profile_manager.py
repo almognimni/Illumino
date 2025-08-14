@@ -29,7 +29,12 @@ class ProfileManager:
 
     # --------------- Internal helpers ---------------
     def _connect(self):
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path)
+        try:
+            conn.execute("PRAGMA foreign_keys = ON;")
+        except Exception:
+            pass
+        return conn
 
     def _init_db(self):
         with self._connect() as conn:

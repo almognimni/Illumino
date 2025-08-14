@@ -1768,6 +1768,25 @@ def api_create_profile():
         return jsonify(success=False, error="Internal error"), 500
     return jsonify(success=True, profile={"id": profile_id, "name": name})
 
+@webinterface.route('/api/delete_profile', methods=['POST'])
+def api_delete_profile():
+    if not hasattr(app_state, 'profile_manager'):
+        abort(500, description="Profile manager not initialized")
+    data = request.get_json(silent=True) or {}
+    try:
+        profile_id = int(data.get('profile_id'))
+    except (TypeError, ValueError):
+        return jsonify(success=False, error="profile_id must be integer"), 400
+    try:
+        app_state.profile_manager.delete_profile(profile_id)
+        # If the deleted profile was the current one, clear it
+        if getattr(app_state, 'current_profile_id', None) == profile_id:
+            app_state.current_profile_id = None
+        return jsonify(success=True)
+    except Exception as e:
+        logger.warning(f"Failed deleting profile {profile_id}: {e}")
+        return jsonify(success=False, error="Internal error"), 500
+
 @webinterface.route('/api/get_highscores', methods=['GET'])
 def api_get_highscores():
     if not hasattr(app_state, 'profile_manager'):

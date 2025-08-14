@@ -18,7 +18,7 @@
         }catch(e){ return null; }
     }
     function initProfilesOnSongsPage(){
-        const selectEl = document.getElementById('profile_select');
+    const selectEl = document.getElementById('profile_select');
         const inputEl = document.getElementById('profile_name_input');
         const msgEl = document.getElementById('profile_message');
         const createBtn = document.getElementById('create_profile_btn');
@@ -34,14 +34,70 @@
             msgEl.classList.add(isError ? 'text-red-400' : 'text-teal-400');
         }
 
+    function renderSelectWithDeletes(select, profiles, current){
+            // Fallback: basic select gets filled with names, separate list renders delete buttons
+            select.innerHTML = '';
+            profiles.forEach(p=>{
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                if(current && parseInt(current) === p.id) opt.selected = true;
+                select.appendChild(opt);
+            });
+
+            // Build an adjacent delete UI list
+            let listId = 'profile_delete_list';
+            let list = document.getElementById(listId);
+            if(!list){
+                list = document.createElement('div');
+                list.id = listId;
+                list.className = 'mt-2 flex flex-wrap gap-2';
+                select.parentElement.appendChild(list);
+            }
+            list.innerHTML = '';
+            profiles.forEach(p=>{
+                const pill = document.createElement('div');
+                pill.className = 'inline-flex items-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm';
+                const name = document.createElement('span');
+                name.textContent = p.name;
+                name.className = 'mr-2';
+                const del = document.createElement('button');
+                del.title = 'Delete profile';
+                del.setAttribute('aria-label', 'Delete profile');
+                del.className = 'text-red-500 hover:text-red-600 font-bold px-1';
+                del.textContent = '×';
+                del.addEventListener('click', ()=>{
+                    const confirmMsg = `Delete profile "${p.name}"? This will remove highscores for this profile.`;
+                    if(!window.confirm(confirmMsg)) return;
+                    fetch('/api/delete_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: p.id})})
+                        .then(r=>r.json())
+                        .then(resp=>{
+                            if(resp.success){
+                                showMsg('Profile deleted');
+                                // If we deleted the current one, clear and pick another
+                                if(window.currentProfileId == p.id){ window.currentProfileId = null; }
+                                loadProfiles();
+                                if(typeof get_songs === 'function') get_songs();
+                            } else {
+                                showMsg(resp.error || 'Failed to delete profile', true);
+                            }
+                        })
+                        .catch(()=>showMsg('Network error deleting profile', true));
+                });
+                pill.appendChild(name);
+                pill.appendChild(del);
+                list.appendChild(pill);
+            });
+        }
+
     function loadProfiles(){
             fetch('/api/get_profiles')
                 .then(r=>r.json())
                 .then(data=>{
             let current = window.currentProfileId || getCookie('currentProfileId');
-                    selectEl.innerHTML = '';
                     const profiles = data.profiles || [];
                     if(profiles.length === 0){
+                        selectEl.innerHTML = '';
                         const opt = document.createElement('option');
                         opt.textContent = 'No profiles';
                         opt.value='';
@@ -49,13 +105,7 @@
                         showMsg('Create a profile to start tracking highscores.');
                         return;
                     }
-                    profiles.forEach(p=>{
-                        const opt = document.createElement('option');
-                        opt.value = p.id;
-                        opt.textContent = p.name;
-                        if(current && parseInt(current) === p.id) opt.selected = true;
-                        selectEl.appendChild(opt);
-                    });
+                    renderSelectWithDeletes(selectEl, profiles, current);
                     if(current && profiles.some(p=>p.id === parseInt(current))){
                         window.currentProfileId = parseInt(current);
                         setCookie('currentProfileId', window.currentProfileId, 365);
@@ -157,9 +207,9 @@
             .then(r=>r.json())
             .then(data=>{
                 const current = window.currentProfileId;
-                state.selectEl.innerHTML = '';
                 const profiles = data.profiles || [];
                 if(profiles.length === 0){
+                    state.selectEl.innerHTML = '';
                     const opt = document.createElement('option');
                     opt.textContent = 'No profiles';
                     opt.value='';
@@ -167,6 +217,13 @@
                     showMsg('Create a profile to start tracking highscores.');
                     return;
                 }
+                // Reuse renderer from the other IIFE if present
+                if(typeof window.loadProfiles === 'function'){
+                    // call the other loader to render deletes UI too
+                    try { window.loadProfiles(); return; } catch(e) {}
+                }
+                // Basic fallback
+                state.selectEl.innerHTML = '';
                 profiles.forEach(p=>{
                     const opt = document.createElement('option');
                     opt.value = p.id;
