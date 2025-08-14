@@ -210,12 +210,24 @@ function initialize_songs() {
     } else {
         document.getElementById("sort_by").value = "dateAsc";
     }
-    get_songs();
-    initialize_upload();
-    // Initialize profiles UI (defined in profiles.js)
+    // Restore current profile ASAP to avoid races when loading highscores
+    try {
+        if (!window.currentProfileId && typeof getCookie === 'function') {
+            const cid = getCookie('currentProfileId');
+            if (cid) {
+                window.currentProfileId = parseInt(cid);
+                // Non-blocking sync to backend
+                try { fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}); } catch(e) {}
+            }
+        }
+    } catch (e) {}
+    // Initialize profiles UI (defined in profiles.js) before fetching songs
     if (typeof window.initProfilesOnSongsPage === 'function') {
         window.initProfilesOnSongsPage();
     }
+    // Now load songs (highscores fetch will use the restored profile id)
+    get_songs();
+    initialize_upload();
     window.addEventListener('resize', function (event) {
         document.getElementById('myVisualizer').config.whiteNoteWidth = document.getElementById('player_and_songs').offsetWidth / 54;
     }, true);

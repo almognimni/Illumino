@@ -1288,21 +1288,42 @@ function get_songs() {
                 document.getElementById("sort_by_date").classList.add("text-gray-800", "dark:text-gray-200");
                 document.getElementById("sort_by_name").classList.remove("text-gray-800", "dark:text-gray-200");
             }
-            // Fetch highscores if profile selected
-            if(window.currentProfileId){
-                fetch('/api/get_highscores?profile_id=' + window.currentProfileId)
+            // Populate highscores; ensure currentProfileId is ready first
+            const applyHighscores = (pid) => {
+                if(!pid) return;
+                fetch('/api/get_highscores?profile_id=' + pid)
                     .then(r=>r.json())
                     .then(data=>{
                         if(!data.success) return;
                         const hs = data.highscores || {};
                         document.querySelectorAll('.song_highscore_cell').forEach(cell=>{
                             const song = cell.getAttribute('data-song');
-                            const val = hs[song] !== undefined ? hs[song] : 0;
+                            const val = hs.hasOwnProperty(song) ? hs[song] : 0;
                             const span = cell.querySelector('.song_highscore_value');
                             if(span) span.textContent = val;
                         });
                     })
                     .catch(()=>{});
+            };
+            const pid = window.currentProfileId;
+            if(pid){
+                applyHighscores(pid);
+            } else {
+                // Try to restore from cookie or backend and then apply
+                let restored = null;
+                try { if(typeof getCookie === 'function') restored = getCookie('currentProfileId'); } catch(e) {}
+                if(restored){
+                    window.currentProfileId = parseInt(restored);
+                    applyHighscores(window.currentProfileId);
+                } else {
+                    // As a last resort, query backend for current profile once
+                    fetch('/api/get_current_profile')
+                        .then(r=>r.json())
+                        .then(d=>{
+                            if(d && d.profile_id){ window.currentProfileId = d.profile_id; applyHighscores(window.currentProfileId); }
+                        })
+                        .catch(()=>{});
+                }
             }
         }
         translateStaticContent();

@@ -3,6 +3,20 @@
 // This file is loaded globally; it initializes itself only when songs page elements are present.
 
 (function(){
+    // Cookie helpers (shared)
+    function setCookie(name, value, days){
+        try{
+            const d = new Date();
+            d.setTime(d.getTime() + (days*24*60*60*1000));
+            document.cookie = `${name}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/`;
+        }catch(e){}
+    }
+    function getCookie(name){
+        try{
+            const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : null;
+        }catch(e){ return null; }
+    }
     function initProfilesOnSongsPage(){
         const selectEl = document.getElementById('profile_select');
         const inputEl = document.getElementById('profile_name_input');
@@ -24,7 +38,7 @@
             fetch('/api/get_profiles')
                 .then(r=>r.json())
                 .then(data=>{
-                    const current = window.currentProfileId;
+            let current = window.currentProfileId || getCookie('currentProfileId');
                     selectEl.innerHTML = '';
                     const profiles = data.profiles || [];
                     if(profiles.length === 0){
@@ -42,10 +56,16 @@
                         if(current && parseInt(current) === p.id) opt.selected = true;
                         selectEl.appendChild(opt);
                     });
-                    if(!window.currentProfileId && profiles[0]){
-                        window.currentProfileId = profiles[0].id;
-                        // Sync selection to backend
+                    if(current && profiles.some(p=>p.id === parseInt(current))){
+                        window.currentProfileId = parseInt(current);
+                        setCookie('currentProfileId', window.currentProfileId, 365);
                         fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
+                        if(typeof get_songs === 'function') get_songs();
+                    } else if(!window.currentProfileId && profiles[0]){
+                        window.currentProfileId = profiles[0].id;
+                        setCookie('currentProfileId', window.currentProfileId, 365);
+                        fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
+                        if(typeof get_songs === 'function') get_songs();
                     }
                     showMsg('Profiles loaded');
                 })
@@ -67,6 +87,7 @@
               .then(resp=>{
                   if(resp.success){
                       window.currentProfileId = resp.profile.id;
+                      setCookie('currentProfileId', window.currentProfileId, 365);
                       showMsg('Profile created');
                       inputEl.value='';
                       // Sync selection to backend
@@ -88,6 +109,7 @@
         inputEl.addEventListener('keyup', (e)=>{ if(e.key==='Enter'){ createProfile(); }});
         selectEl.addEventListener('change', function(){
             window.currentProfileId = this.value || null;
+            if(window.currentProfileId){ setCookie('currentProfileId', window.currentProfileId, 365); }
             // Sync selection to backend (null or id)
             fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
             if(this.value){
@@ -152,8 +174,14 @@
                     if(current && parseInt(current) === p.id) opt.selected = true;
                     state.selectEl.appendChild(opt);
                 });
-                if(!window.currentProfileId && profiles[0]){
+                let cookieCurrent = window.currentProfileId || getCookie('currentProfileId');
+                if(cookieCurrent && profiles.some(p=>p.id === parseInt(cookieCurrent))){
+                    window.currentProfileId = parseInt(cookieCurrent);
+                    setCookie('currentProfileId', window.currentProfileId, 365);
+                    fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
+                } else if(!window.currentProfileId && profiles[0]){
                     window.currentProfileId = profiles[0].id;
+                    setCookie('currentProfileId', window.currentProfileId, 365);
                     fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                 }
                 showMsg('Profiles loaded');
@@ -177,6 +205,7 @@
           .then(resp=>{
               if(resp.success){
                   window.currentProfileId = resp.profile.id;
+                  setCookie('currentProfileId', window.currentProfileId, 365);
                   showMsg('Profile created');
                   if(state.inputEl) state.inputEl.value='';
                   fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
@@ -199,6 +228,7 @@
         if(state.selectEl){
             state.selectEl.addEventListener('change', function(){
                 window.currentProfileId = this.value || null;
+                if(window.currentProfileId){ setCookie('currentProfileId', window.currentProfileId, 365); }
                 fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
                 if(this.value){
                     showMsg('Selected profile: ' + this.options[this.selectedIndex].text);
@@ -218,7 +248,7 @@
             return;
         }
         attachEvents();
-        loadProfiles();
+    loadProfiles();
         console.log('[Profiles] Init complete');
     }
 
