@@ -19,7 +19,7 @@
     }
     function initProfilesOnSongsPage(){
     const selectEl = document.getElementById('profile_select');
-        const inputEl = document.getElementById('profile_name_input');
+    const inputEl = document.getElementById('profile_name_input');
         const msgEl = document.getElementById('profile_message');
         const createBtn = document.getElementById('create_profile_btn');
 
@@ -34,8 +34,19 @@
             msgEl.classList.add(isError ? 'text-red-400' : 'text-teal-400');
         }
 
-    function renderSelectWithDeletes(select, profiles, current){
-            // Fallback: basic select gets filled with names, separate list renders delete buttons
+        function selectProfile(id, name){
+            if(!id){ return; }
+            window.currentProfileId = parseInt(id);
+            setCookie('currentProfileId', window.currentProfileId, 365);
+            // sync hidden native select value for compatibility
+            if(selectEl){ selectEl.value = String(id); }
+            fetch('/api/set_current_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: window.currentProfileId})}).catch(()=>{});
+            showMsg('Selected profile: ' + name);
+            if(typeof get_songs === 'function') get_songs();
+        }
+
+    function renderCustomDropdown(select, profiles, current){
+            // ensure native select mirrors data but stays hidden
             select.innerHTML = '';
             profiles.forEach(p=>{
                 const opt = document.createElement('option');
@@ -44,37 +55,83 @@
                 if(current && parseInt(current) === p.id) opt.selected = true;
                 select.appendChild(opt);
             });
+            select.classList.add('hidden');
 
-            // Build an adjacent delete UI list
-            let listId = 'profile_delete_list';
-            let list = document.getElementById(listId);
-            if(!list){
-                list = document.createElement('div');
-                list.id = listId;
-                list.className = 'mt-2 flex flex-wrap gap-2';
-                select.parentElement.appendChild(list);
+            // Create container if missing
+            let container = document.getElementById('profile_dropdown_container');
+            if(!container){
+                container = document.createElement('div');
+                container.id = 'profile_dropdown_container';
+                container.className = 'relative inline-block';
+                // insert right after the select element
+                select.parentElement.insertBefore(container, select.nextSibling);
             }
-            list.innerHTML = '';
+            container.innerHTML = '';
+
+            const selectedProfile = profiles.find(p=> current && parseInt(current) === p.id) || profiles[0];
+
+            // Toggle button
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            // Remove bg-* classes; we set background inline to control color precisely
+            toggle.className = 'border border-gray-300 dark:border-gray-600 rounded px-3 py-2 text-sm text-gray-700 dark:text-gray-200 flex items-center justify-between text-left';
+            // Make the toggle wider so long names fit comfortably next to the ×
+            toggle.style.minWidth = '280px';
+            // Theme-applier: gray in both themes (light gray in light, dark gray in dark)
+            const applyDropdownTheme = () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                toggle.style.backgroundColor = isDark ? '#374151' : '#e5e7eb'; // gray-700 / gray-200
+                toggle.style.opacity = '1';
+                toggle.style.backdropFilter = 'none';
+            };
+            toggle.innerHTML = `<span class="truncate flex-1 min-w-0 mr-2 text-left" title="${selectedProfile ? selectedProfile.name : ''}">${selectedProfile ? selectedProfile.name : 'Select profile'}</span>
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>`;
+            container.appendChild(toggle);
+
+            // Dropdown menu
+            const menu = document.createElement('div');
+            // Remove bg-* classes; we set background inline to control color precisely
+            menu.className = 'absolute z-10 mt-1 w-full max-h-60 overflow-auto border border-gray-300 dark:border-gray-600 rounded shadow-lg hidden text-left';
+            // Match minimum width with toggle so text has room and doesn’t sit under the ×
+            menu.style.minWidth = '280px';
+            const applyMenuTheme = () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                menu.style.backgroundColor = isDark ? '#374151' : '#e5e7eb'; // gray-700 / gray-200
+                menu.style.opacity = '1';
+                menu.style.backdropFilter = 'none';
+            };
             profiles.forEach(p=>{
-                const pill = document.createElement('div');
-                pill.className = 'inline-flex items-center bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-sm';
-                const name = document.createElement('span');
-                name.textContent = p.name;
-                name.className = 'mr-2';
-                const del = document.createElement('button');
-                del.title = 'Delete profile';
-                del.setAttribute('aria-label', 'Delete profile');
-                del.className = 'text-red-500 hover:text-red-600 font-bold px-1';
-                del.textContent = '×';
-                del.addEventListener('click', ()=>{
-                    const confirmMsg = `Delete profile "${p.name}"? This will remove highscores for this profile.`;
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer text-left';
+                const nameSpan = document.createElement('span');
+                // Let the name take available space and truncate before the delete button; keep left aligned
+                nameSpan.className = 'truncate flex-1 min-w-0 pr-3 text-left';
+                nameSpan.textContent = p.name;
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.title = 'Delete profile';
+                delBtn.className = 'text-red-500 hover:text-red-600 pl-2 pr-1';
+                delBtn.textContent = '×';
+
+                // Select on row click (except delete)
+                row.addEventListener('click', (e)=>{
+                    // ignore if delete button clicked
+                    if(e.target === delBtn) return;
+                    menu.classList.add('hidden');
+                    selectProfile(p.id, p.name);
+                    toggle.querySelector('span').textContent = p.name;
+                });
+
+                // Delete handler
+                delBtn.addEventListener('click', (e)=>{
+                    e.stopPropagation();
+                    const confirmMsg = `Delete profile \"${p.name}\"? This will remove highscores for this profile.`;
                     if(!window.confirm(confirmMsg)) return;
                     fetch('/api/delete_profile', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({profile_id: p.id})})
                         .then(r=>r.json())
                         .then(resp=>{
                             if(resp.success){
                                 showMsg('Profile deleted');
-                                // If we deleted the current one, clear and pick another
                                 if(window.currentProfileId == p.id){ window.currentProfileId = null; }
                                 loadProfiles();
                                 if(typeof get_songs === 'function') get_songs();
@@ -84,9 +141,28 @@
                         })
                         .catch(()=>showMsg('Network error deleting profile', true));
                 });
-                pill.appendChild(name);
-                pill.appendChild(del);
-                list.appendChild(pill);
+
+                row.appendChild(nameSpan);
+                row.appendChild(delBtn);
+                menu.appendChild(row);
+            });
+            container.appendChild(menu);
+
+            // Apply initial theme and keep in sync with theme toggles
+            applyDropdownTheme();
+            applyMenuTheme();
+            const themeObserver = new MutationObserver(() => { applyDropdownTheme(); applyMenuTheme(); });
+            themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+            // Toggle open/close
+            toggle.addEventListener('click', ()=>{
+                menu.classList.toggle('hidden');
+            });
+            // Close on outside click
+            document.addEventListener('click', (e)=>{
+                if(!container.contains(e.target)){
+                    menu.classList.add('hidden');
+                }
             });
         }
 
@@ -105,7 +181,7 @@
                         showMsg('Create a profile to start tracking highscores.');
                         return;
                     }
-                    renderSelectWithDeletes(selectEl, profiles, current);
+                    renderCustomDropdown(selectEl, profiles, current);
                     if(current && profiles.some(p=>p.id === parseInt(current))){
                         window.currentProfileId = parseInt(current);
                         setCookie('currentProfileId', window.currentProfileId, 365);
@@ -168,7 +244,9 @@
             }
         });
 
-        loadProfiles();
+    // Slightly widen the name input so longer names are visible and not cramped
+    if(inputEl){ inputEl.style.minWidth = '280px'; }
+    loadProfiles();
     }
 
     // Run after each dynamic page load (index.js calls initialize_songs which will invoke this)
@@ -305,6 +383,8 @@
             return;
         }
         attachEvents();
+    // Keep input reasonably wide here as well (fallback path)
+    if(state.inputEl){ state.inputEl.style.minWidth = '280px'; }
     loadProfiles();
         console.log('[Profiles] Init complete');
     }
