@@ -572,7 +572,7 @@ const translations = {
         reset_zoom: "Resetuj",
         learning_status: "Rozpocznij Nauczanie",
 
-        //score
+        // score and profiles
         score: "Wynik",
         combo: "Kombo",
         multiplier: "Mnożnik",
@@ -844,7 +844,7 @@ const translations = {
         reset_zoom: "Réinitialiser",
         learning_status: "Commencer l'Apprentissage",
 
-        //score
+        // score and profiles
         score: "Résultat",
         combo: "Combo",
         multiplier: "Multiplicateur",
@@ -1114,7 +1114,7 @@ const translations = {
         reset_zoom: "Zurücksetzen",
         learning_status: "Lernen starten",
 
-        //score
+        // score and profiles
         score: "Ergebnis",
         combo: "Combo",
         multiplier: "Multiplikator",
@@ -1383,7 +1383,7 @@ const translations = {
         reset_zoom: "Restablecer",
         learning_status: "Iniciar Aprendizaje",
 
-        //score
+        // score and profiles
         score: "Resultado",
         combo: "Combo",
         multiplier: "Multiplicador",
@@ -1652,7 +1652,7 @@ const translations = {
         reset_zoom: "重置",
         learning_status: "开始学习",
 
-        //score
+        // score and profiles
         score: "得分",
         combo: "连击",
         multiplier: "倍率",
@@ -1921,7 +1921,7 @@ const translations = {
         reset_zoom: "रीसेट करें",
         learning_status: "शिक्षा शुरू करें",
 
-        //score
+        // score and profiles
         score: "स्कोर",
         combo: "कॉम्बो",
         multiplier: "गुणाकार",
@@ -2191,7 +2191,7 @@ const translations = {
         reset_zoom: "Reiniciar",
         learning_status: "Iniciar Aprendizado",
 
-        //score
+        // score and profiles
         score: "Pontuação",
         combo: "Sequência",
         multiplier: "Multiplicador",
@@ -2460,7 +2460,7 @@ const translations = {
         learning_status: "学習を開始",
 
 
-        //score
+        // score and profiles
         score: "スコア",
         combo: "コンボ",
         multiplier: "倍率",
@@ -2727,8 +2727,8 @@ const translations = {
     delay: "지연 (초)",
     reset_zoom: "리셋",
     learning_status: "학습 시작",
-    
-    //score
+
+    // Score and profiles
     score: "점수",
     combo: "콤보",
     multiplier: "배수",
@@ -2979,7 +2979,7 @@ he: {
     reset_zoom:"איפוס",
     learning_status: "התחל למידה",
 
-    //score
+    // Score and profiles
     score: "ניקוד",
     combo: "רצף",
     multiplier: "מכפלה",
@@ -2990,7 +2990,6 @@ he: {
     show_summary: "הצג סיכום",
     highscore: "שיא",
     new_profile: "פרופיל חדש",
-
     
 },
 ar:{
@@ -3227,6 +3226,7 @@ ar:{
     reset_zoom: "إعادة الضبط",
     learning_status: "ابدأ التعلم",
 
+    // score and profiles
     score: "النتيجة",
     combo: "سلسلة",
     multiplier: "مضاعف",
