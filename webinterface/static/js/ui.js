@@ -1677,11 +1677,12 @@ function handleSessionSummary(data, retries = 5) {
     }
 
     // Prepare chart data
-    const timingDataR = data.timing_r.map(item => ({ x: item[0], y: item[1] }));
-    const timingDataL = data.timing_l.map(item => ({ x: item[0], y: item[1] }));
+    const timingDataR = (data.timing_r || []).map(item => ({ x: item[0], y: item[1] }));
+    const timingDataL = (data.timing_l || []).map(item => ({ x: item[0], y: item[1] }));
+    const avgDelays = (data.avg_delays_last_plays || []).map(item => ({ x: item[0], y: item[1] }));
 
     // Find min/max for axes scaling (adjust y slightly for markers)
-    const allDelays = timingDataR.map(p => p.y).concat(timingDataL.map(p => p.y));
+    const allDelays = timingDataR.map(p => p.y).concat(timingDataL.map(p => p.y)).concat(avgDelays.map(p=>p.y));
     const minY = allDelays.length > 0 ? Math.min(...allDelays) : -0.1;
     const maxY = allDelays.length > 0 ? Math.max(...allDelays, data.max_delay) : data.max_delay + 0.1;
     const minYAxis = minY - (maxY - minY) * 0.1; // Add 10% padding below
@@ -1725,7 +1726,19 @@ function handleSessionSummary(data, retries = 5) {
                     pointStyle: 'crossRot',
                     radius: 8,
                     showLine: false
-                }
+                },
+                // Average delays line (last plays)
+                (avgDelays.length ? {
+                    label: translate('average_delay_last_plays') || 'Avg Delay (last plays)',
+                    data: avgDelays,
+                    type: 'line',
+                    showLine: true,
+                    fill: false,
+                    backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    pointRadius: 3,
+                    tension: 0.2
+                } : null)
             ]
         },
         options: {

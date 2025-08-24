@@ -685,6 +685,21 @@ class LearnMIDI:
                     color_r_rgb = self.hand_colorList[self.hand_colorR]
                     color_l_rgb = self.hand_colorList[self.hand_colorL]
 
+                    # 1. Combine both hands into one sorted list by note time
+                    combined_timings = sorted(self.right_hand_timing + self.left_hand_timing, key=lambda x: x[0])
+
+                    # 2. Persist this play's combined list (last 10 plays per profile/song)
+                    avg_delays = []
+                    profile_id = getattr(app_state, 'current_profile_id', None)
+                    pm = getattr(app_state, 'profile_manager', None)
+                    if profile_id and pm and hasattr(self, 'current_song_name') and self.current_song_name:
+                        try:
+                            pm.store_session_delays(int(profile_id), self.current_song_name, combined_timings, keep=10)
+                            # 3. Retrieve averaged delays across stored sessions (per index)
+                            avg_delays = pm.get_average_delays(int(profile_id), self.current_song_name, limit=10)
+                        except Exception as e:
+                            score_logger.warning(f"Failed storing / computing average delays: {e}")
+
                     summary_data = {
                         "type": "session_summary",
                         # Basic stats
@@ -695,6 +710,8 @@ class LearnMIDI:
                         # Data for graph
                         "timing_r": self.right_hand_timing,
                         "timing_l": self.left_hand_timing,
+                        "timing_combined": combined_timings,  # New combined list
+                        "avg_delays_last_plays": avg_delays,   # List of (avg_time, avg_delay)
                         "mistakes_r_times": self.right_hand_mistakes,
                         "mistakes_l_times": self.left_hand_mistakes,
                         "max_delay": self.score_manager.max_delay,

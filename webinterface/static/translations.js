@@ -296,6 +296,7 @@ const translations = {
         if_the_hotspot: "If the Hotspot doesn't appear after 5 minutes, please restart the device",
         connect: "Connect",
         session_summary: "Session Summary",
+    average_delay_last_plays: "Average Delay (last plays)",
         right_hand_mistakes: "Right Hand Mistakes",
         right_hand_delay: "Note Response Time - Right Hand",
         left_hand_mistakes: "Left Hand Mistakes",
@@ -554,6 +555,7 @@ const translations = {
         if_the_hotspot: "Jeśli Hotspot nie pojawi się po 5 minutach, proszę zrestartować urządzenie",
         connect: "Połącz",
         session_summary: "Podsumowanie Gry",
+    average_delay_last_plays: "Średnie opóźnienie (ostatnie gry)",
         right_hand_mistakes: "Błędy Prawej Ręki",
         right_hand_delay: "Czas Reakcji na Nutę - Prawa Ręka",
         left_hand_mistakes: "Błędy Lewej Ręki",
@@ -826,6 +828,7 @@ const translations = {
         
         
         session_summary: "Résumé de la Partie",
+    average_delay_last_plays: "Average Delay (last plays)",
         right_hand_mistakes: "Erreurs de la Main Droite",
         right_hand_delay: "Temps de Réponse à la Note - Main Droite",
         left_hand_mistakes: "Erreurs de la Main Gauche",
@@ -1096,6 +1099,7 @@ const translations = {
 
 
         session_summary: "Spiels Zusammenfassung",
+    average_delay_last_plays: "Average Delay (last plays)",
         right_hand_mistakes: "Fehler der rechten Hand",
         right_hand_delay: "Antwortzeit auf Note - Rechte Hand",
         left_hand_mistakes: "Fehler der linken Hand",
@@ -1365,6 +1369,7 @@ const translations = {
 
 
         session_summary: "Resumen del Juego",
+    average_delay_last_plays: "Average Delay (last plays)",
         right_hand_mistakes: "Errores de la Mano Derecha",
         right_hand_delay: "Tiempo de Respuesta a la Nota - Mano Derecha",
         left_hand_mistakes: "Errores de la Mano Izquierda",
@@ -1634,6 +1639,7 @@ const translations = {
 
 
         session_summary: "游戏总结",
+    average_delay_last_plays: "平均延迟 (最近的演奏)",
         right_hand_mistakes: "右手错误",
         right_hand_delay: "音符反应时间 - 右手",
         left_hand_mistakes: "左手错误",
@@ -1903,6 +1909,7 @@ const translations = {
 
 
         session_summary: "गेम सारांश",
+    average_delay_last_plays: "औसत विलंब (पिछले खेल)",
         right_hand_mistakes: "दाहिनी हाथ की गलतियाँ",
         right_hand_delay: "नोट प्रतिक्रिया समय - दाहिनी हाथ",
         left_hand_mistakes: "बाईं हाथ की गलतियाँ",
@@ -2173,6 +2180,7 @@ const translations = {
 
 
         session_summary: "Resumo do Jogo",
+    average_delay_last_plays: "Average Delay (últimas partidas)",
         right_hand_mistakes: "Erros da Mão Direita",
         right_hand_delay: "Tempo de Resposta à Nota - Mão Direita",
         left_hand_mistakes: "Erros da Mão Esquerda",
@@ -2441,6 +2449,7 @@ const translations = {
         connect: "接続",
 
         session_summary: "ゲームの概要",
+    average_delay_last_plays: "平均ディレイ (直近のプレイ)",
         right_hand_mistakes: "右手のミス",
         right_hand_delay: "ノート反応時間 - 右手",
         left_hand_mistakes: "左手のミス",
@@ -2710,6 +2719,7 @@ const translations = {
 
     
     session_summary: "게임 요약",
+    average_delay_last_plays: "평균 지연 (최근 플레이)",
     right_hand_mistakes: "오른손 실수",
     right_hand_delay: "음표 반응 시간 - 오른손",
     left_hand_mistakes: "왼손 실수",
@@ -2961,6 +2971,7 @@ he: {
     
     //Summary
     session_summary: "סיכום ביצוע",
+    average_delay_last_plays: "Average Delay (last plays)",
     right_hand_mistakes: "טעויות יד ימין",
     right_hand_delay: "זמן תגובה לתו - יד ימין",
     left_hand_mistakes: "טעויות יד שמאל",
@@ -3210,6 +3221,7 @@ ar:{
     if_the_hotspot: "لو نقطة الاتصال ما ظهرتش بعد ٥ دقايق، برجاء إعادة تشغيل الجهاز",
     connect: "اتصل",
     session_summary: "ملخص الجلسة",
+    average_delay_last_plays: "متوسط التأخير (آخر مرات اللعب)",
     right_hand_mistakes: "أخطاء اليد اليمين",
     right_hand_delay: "زمن الاستجابة - اليد اليمين",
     left_hand_mistakes: "أخطاء اليد الشمال",
